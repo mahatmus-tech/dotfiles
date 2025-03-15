@@ -1,0 +1,9 @@
+# Open VLC Sara Camera
+ffplay rtsp://aranpasta:P9FMPYFkjElmr9SSa8tI@192.168.1.8/stream2
+
+# Open Senior Desktop
+rdesktop -g 1920x1080 -M -E -z -x l -d SENIOR -u ara.pasta -p Mahatma2002 192.168.1.22
+
+
+Strobe Utility
+sudo blstrobe -e -f -o /dev/i2c-4 -t 5000
