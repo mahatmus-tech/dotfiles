@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+# Before using yay, check if it exists
+install_aur() {
+    if ! command -v yay >/dev/null; then
+        error "yay is not installed. Cannot install AUR packages."
+        return 1
+    fi
+    # rest of function...
+}
+
+install_aur() {
+    status "Installing AUR packages: $*"
+    yay -S --needed --noconfirm "$@" || {
+        warning "Failed to install some AUR packages. Continuing..."
+        return 1
+    }
+}
 
     # Cooler Master MM720 mouse fix
     sudo rm -f /etc/udev/rules.d/99-mm720-power.rules
