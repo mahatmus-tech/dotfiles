@@ -19,6 +19,17 @@
     status "Installing flatpak..."
     install_packages flatpak
 
+    install_pipewire_audio() {
+    status "Installing audio packages..."
+	# remove conflicting packages
+	sudo pacman -R --noconfirm jack2
+    # install audio packages
+    install_packages \
+		pipewire pipewire-alsa pipewire-jack pipewire-pulse \
+		lib32-pipewire alsa-utils alsa-plugins alsa-ucm-conf \
+		gst-plugin-pipewire wireplumber 
+}
+
     if [ "$YAY_INSTALLED" = true ]; then
         install_aur brave-bin teams-for-linux
     fi
