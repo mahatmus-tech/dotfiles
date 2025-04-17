@@ -17,6 +17,7 @@ install_aur() {
     }
 }
 
+install_packages micro
     # Cooler Master MM720 mouse fix
     sudo rm -f /etc/udev/rules.d/99-mm720-power.rules
     sudo wget -P /etc/udev/rules.d https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/99-mm720-power.rules
