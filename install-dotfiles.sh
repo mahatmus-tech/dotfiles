@@ -14,6 +14,7 @@
 
     # coding
     install_packages emacs-wayland bash-completion docker docker-compose
+    sudo usermod -aG gamemode $USER
 
     status "Installing flatpak..."
     install_packages flatpak
