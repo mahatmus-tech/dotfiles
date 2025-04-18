@@ -64,3 +64,20 @@ install_packages micro
     status "Installing yay (AUR helper)..."
     clone_and_build "https://aur.archlinux.org/yay-bin.git" "yay-bin"
     $YAY_INSTALLED=true
+
+
+
+    #Download linux-tkg kernel
+    safe_download /boot https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/tags/1.0/tkg-kernel/vmlinuz-linux614-tkg-eevdf
+    safe_download /boot https://github.com/mahatmus-tech/arch-auto-install/releases/download/1.0/initramfs-linux614-tkg-eevdf.img
+    safe_download /boot https://github.com/mahatmus-tech/arch-auto-install/releases/download/1.0/initramfs-linux614-tkg-eevdf-fallback.img
+    safe_download /boot/loader/entries https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/tags/1.0/tkg-kernel/linux-tkg.conf
+    safe_download /boot/loader/entries https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/tags/1.0/tkg-kernel/linux-tkg-fallback.conf
+    
+    #Edit the linux-tkg.conf
+    UUID=$(blkid -s UUID -o value $(findmnt -n -o SOURCE /))
+    sudo sed -i -E "s/PARTITION_ID/$UUID/g" /boot/loader/entries/linux-tkg.conf
+    sudo sed -i -E "s/PARTITION_ID/$UUID/g" /boot/loader/entries/linux-tkg-fallback.conf
+    sudo bootctl update
+    # set linux-tkg as default
+    sudo bootctl set-default linux-tkg.conf
