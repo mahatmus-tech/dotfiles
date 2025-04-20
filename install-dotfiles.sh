@@ -66,15 +66,16 @@ clone_and_build() {
 # ======================
 # INSTALLATION SECTIONS
 # ======================
-install_my_packages() {
-	status "Installing My Packages ..."
+install_packages() {
+	status "Installing Packages ..."
+
  	# Update AUR and Pacman ackages
 	yay -Syu --needed --noconfirm
     # Coding
     install_packages emacs-wayland bash-completion
     # Basic Edition
     install_packages micro
-    #RDP
+    # RDP
     install_packages rdesktop
     # Browser
     install_aur brave-bin
@@ -82,10 +83,28 @@ install_my_packages() {
     install_aur vesktop-bin teams-for-linux
     # Audio
     install_aur spotify
-	# remove conflicting packages
+	# remove conflicting package with pipewire
 	sudo pacman -R --noconfirm jack2
-    #Blstrobe
+    # blstrobe
+    clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
+                    "chmod +x autogen.sh configure && ./autogen.sh && ./configure && make && sudo make install"
+}
 
+download_dotfile_project() {
+    INSTALL_DIR="$HOME/Projects"
+    clone_and_build "https://github.com/mahatmus-tech/dotfiles.git" "dotfiles" \
+                    "echo "Git Dotfiles Downloaded!" "
+}
+
+install_scripts() {
+
+    cd "$HOME/Projects/dotfiles/scripts"
+    sudo rm -f /etc/udev/rules.d/99-mm720-power.rules
+    cp /etc/udev/rules.d https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/99-mm720-power.rules
+
+
+sudo rm -f "$HOME/.config/MangoHud/MangoHud.conf"
+    safe_download "$HOME"/.config/MangoHud https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/MangoHud.conf
 }
 
 # ======================
@@ -95,11 +114,11 @@ configure_linux() {
     status "Configuring My Linux..."
 	local CONFIG=""
 
-    # Cooler Master MM720 mouse fix
+    status "Installing Cooler Master MM720 Freeze Fix..."
     sudo rm -f /etc/udev/rules.d/99-mm720-power.rules
     safe_download /etc/udev/rules.d https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/99-mm720-power.rules
     sudo udevadm control --reload
-    sudo udevadm trigger  # Apply new rules without reboot        
+    sudo udevadm trigger  # Apply new rules without reboot
 
     # Mod marvel rivals
     # https://www.nexusmods.com/marvelrivals/mods/273?tab=description
@@ -149,7 +168,9 @@ configure_linux() {
 main() {
 	echo -e "\n${GREEN}🚀 Starting My DotFiles Install ${NC}"
 
-	install_my_packages
+	install_packages
+    download_dotfile_project
+    install_scripts
 	configure_linux
 	
 	echo -e "\n${GREEN} Installation completed successfully! ${NC}"
