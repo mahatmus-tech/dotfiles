@@ -15,6 +15,23 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Menu configuration
+MENU_OPTIONS=(
+	1  "Download Project" on
+    2  "Install Apps"     on
+    3  "Install Scripts"  on
+    4  "Install Configs"  on
+    5  "Install Mods"     off
+    6  "Configure Linux"  on
+)
+
+1)  download_project ;;
+2)  install_apps ;;
+3)  install_scripts ;;
+4)  install_configs ;;
+5)  install_mods ;;
+6)  configure_linux ;;
+
 # ======================
 # INSTALLATION FUNCTIONS
 # ======================
@@ -39,12 +56,23 @@ install_aur() {
     }
 }
 
-safe_download() {
-    local dest=$1 url=$2
-    if ! sudo wget -P "$dest" -q --show-progress "$url"; then
-        error "Failed to download $url"
+show_menu() {
+    install_packages dialog
+    dialog --clear \
+        --title "Arch Hyprland Installation" \
+        --checklist "Select components to install:" 20 60 15 \
+        "${MENU_OPTIONS[@]}" 2>selected
+}
+
+copy_file() {
+    local file=$1 dest=$2
+    sudo rm -f "$dest/$file"
+    if ! sudo cp "$file" "$dest"; then
+        error "Failed to copy $file"
         return 1
     fi
+
+    sudo cp blstrobe-start.sh "$HOME/Scripts"
 }
 
 clone_and_build() {
@@ -66,8 +94,16 @@ clone_and_build() {
 # ======================
 # INSTALLATION SECTIONS
 # ======================
-install_packages() {
-	status "Installing Packages ..."
+
+download_project() {
+    status "Downloading Project..."
+    INSTALL_DIR="$HOME/Projects"
+    clone_and_build "https://github.com/mahatmus-tech/dotfiles.git" "dotfiles" \
+                    "echo "Git Dotfiles Downloaded!" "
+}
+
+install_apps() {
+	status "Installing Apps ..."
 
  	# Update AUR and Pacman ackages
 	yay -Syu --needed --noconfirm
@@ -90,76 +126,55 @@ install_packages() {
                     "chmod +x autogen.sh configure && ./autogen.sh && ./configure && make && sudo make install"
 }
 
-download_dotfile_project() {
-    INSTALL_DIR="$HOME/Projects"
-    clone_and_build "https://github.com/mahatmus-tech/dotfiles.git" "dotfiles" \
-                    "echo "Git Dotfiles Downloaded!" "
-}
-
 install_scripts() {
-
+    status "Installing Scrips ..."
     cd "$HOME/Projects/dotfiles/scripts"
-    sudo rm -f /etc/udev/rules.d/99-mm720-power.rules
-    cp /etc/udev/rules.d https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/99-mm720-power.rules
 
-
-sudo rm -f "$HOME/.config/MangoHud/MangoHud.conf"
-    safe_download "$HOME"/.config/MangoHud https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/MangoHud.conf
+    copy_file blstrobe-start.sh "$HOME/Scripts"
+    copy_file camera-sara.sh "$HOME/Scripts"
+    copy_file remote-senior.sh "$HOME/Scripts"
 }
 
-# ======================
-# POST-INSTALL
-# ======================
-configure_linux() {
-    status "Configuring My Linux..."
-	local CONFIG=""
+install_configs() {
+    status "Installing Configs ..."
+    cd "$HOME/Projects/dotfiles/configs"
+
+    sudo rm -f "$HOME/.config/hypr/monitors.conf"
+    copy_file 120hz.conf "$HOME/.config/hypr/Monitor_Profiles"    
+    copy_file 120hz.conf "$HOME/.config/hypr"
+    mv "$HOME/.config/hypr/120hz.conf" "$HOME/.config/hypr/monitors.conf"
 
     status "Installing Cooler Master MM720 Freeze Fix..."
-    sudo rm -f /etc/udev/rules.d/99-mm720-power.rules
-    safe_download /etc/udev/rules.d https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/99-mm720-power.rules
+    copy_file 99-mm720-power.rules /etc/udev/rules.d
     sudo udevadm control --reload
-    sudo udevadm trigger  # Apply new rules without reboot
+    # Apply new rules without reboot
+    sudo udevadm trigger
+}
 
+install_mods() {
+    status "Installing Mods..."
+    cd "$HOME/Projects/dotfiles/mods"
+
+    cd marvel-rivals
     # Mod marvel rivals
     # https://www.nexusmods.com/marvelrivals/mods/273?tab=description
-    # In ta mod folder, copy to the game file on steam. Check the gameID of the game 2767030
-    cp Scalability.ini /home/mahatmus/.steam/steam/steamapps/compatdata/2767030/pfx/drive_c/users/steamuser/AppData/Local/Marvel/Saved/Config/Windows/    
+    # In ta mod folder, copy to the game file on steam. Check the gameID of the game 2767030    
+    copy_file Scalability.ini "$HOME/.steam/steam/steamapps/compatdata/2767030/pfx/drive_c/users/steamuser/AppData/Local/Marvel/Saved/Config/Windows/"
+}
+
+configure_linux() {
+    status "Configuring Hyprland..."
+	local CONFIG=""
 	
-		CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
-		echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
-		
-		CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
-		echo "# my settings" >> "$CONFIG"
-		echo "windowrulev2 = content game, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = nodim, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = noanim, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = noborder, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = noshadow, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = norounding, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = allowsinput, tag:games*" >> "$CONFIG"
-		echo "windowrulev2 = immediate, tag:games*" >> "$CONFIG"
-		
-		CONFIG="$HOME/.config/hypr/UserConfigs/UserSettings.conf"
-		sudo sed -i -E "s|#accel_profile =|accel_profile = flat|" "$CONFIG"
-		sudo sed -i -E "s|direct_scanout = 0|direct_scanout = 2|" "$CONFIG"
+    CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
+    echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
+    
+    CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
+    echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
 
-        CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
-        echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
-        
-
-		CONFIG="$HOME/.zprofile"
-  		sudo sed -i -E "s/#/ /g" "$CONFIG"
-
-		if [ "$GPU" = "nvidia" ]; then
-			CONFIG="$HOME/.config/hypr/UserConfigs/ENVariables.conf"
-			# Force GBM as a backend
-			echo "# my settings" >> "$CONFIG"
-			echo "env = GBM_BACKEND,nvidia-drm" >> "$CONFIG"
-			echo "env = __GLX_VENDOR_LIBRARY_NAME,nvidia" >> "$CONFIG"
-
-			# Hardware acceleration on NVIDIA GPUs
-			echo "env = LIBVA_DRIVER_NAME,nvidia" >> "$CONFIG" 
-		fi
+    CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
+    echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
+    echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 }
 
 # ======================
@@ -167,11 +182,22 @@ configure_linux() {
 # ======================
 main() {
 	echo -e "\n${GREEN}🚀 Starting My DotFiles Install ${NC}"
+    
+    show_menu
 
-	install_packages
-    download_dotfile_project
-    install_scripts
-	configure_linux
+    mapfile -t SELECTIONS < selected
+    rm -f selected
+
+    for selection in "${SELECTIONS[@]}"; do
+        case $selection in
+            1)  download_project ;;
+            2)  install_apps ;;
+            3)  install_scripts ;;
+            4)  install_configs ;;
+            5)  install_mods ;;
+            6)  configure_linux ;;
+        esac
+    done
 	
 	echo -e "\n${GREEN} Installation completed successfully! ${NC}"
 	echo -e "${YELLOW} Please reboot your system to apply all changes. ${NC}"
