@@ -164,10 +164,11 @@ configure_linux() {
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
     echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
-    echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"    
+    echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 }
 
 
