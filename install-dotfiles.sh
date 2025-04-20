@@ -133,9 +133,10 @@ install_configs() {
     status "Installing Configs ..."
     cd "$HOME/Projects/dotfiles/configs"
 
-    sudo rm -f "$HOME/.config/hypr/monitors.conf"
-    copy_file 120hz.conf "$HOME/.config/hypr/Monitor_Profiles"    
+    status "Installing 2 Monitor config ..."
+    copy_file 120hz.conf "$HOME/.config/hypr/Monitor_Profiles"
     copy_file 120hz.conf "$HOME/.config/hypr"
+    sudo rm -f "$HOME/.config/hypr/monitors.conf"
     mv "$HOME/.config/hypr/120hz.conf" "$HOME/.config/hypr/monitors.conf"
 
     status "Installing Cooler Master MM720 Freeze Fix..."
