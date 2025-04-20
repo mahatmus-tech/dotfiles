@@ -5,6 +5,7 @@ set -euo pipefail
 # ======================
 # GLOBAL VARIABLES
 # ======================
+
 # Default install dir
 INSTALL_DIR="$HOME/Apps"
 
@@ -25,16 +26,11 @@ MENU_OPTIONS=(
     6  "Configure Linux"  on
 )
 
-1)  download_project ;;
-2)  install_apps ;;
-3)  install_scripts ;;
-4)  install_configs ;;
-5)  install_mods ;;
-6)  configure_linux ;;
 
 # ======================
 # INSTALLATION FUNCTIONS
 # ======================
+
 status() { echo -e "${GREEN}[+]${NC} $1"; }
 warning() { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
@@ -71,25 +67,23 @@ copy_file() {
         error "Failed to copy $file"
         return 1
     fi
-
-    sudo cp blstrobe-start.sh "$HOME/Scripts"
 }
 
 clone_and_build() {
     local repo_url=$1
     local dir_name=$2
     local build_cmd=${3:-"makepkg -si --noconfirm"}
-    local clone_flags=$4  # No default
-
+    
     status "Building $dir_name from source..."
     sudo rm -rf "$INSTALL_DIR/$dir_name"
-    git clone $clone_flags "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
+    git clone "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
     cd "$INSTALL_DIR/$dir_name" || error "Failed to enter $dir_name directory"
-    sudo chown -R "$USER":"$USER" . || error "Failed to change ownership"
+    sudo chown -R "$USER" . || error "Failed to change ownership"
     sudo chmod -R 755 . || error "Failed to change permissions"
     eval "$build_cmd" || warning "Failed to build/install $dir_name"
     cd - >/dev/null || error "Failed to return to previous directory"
 }
+
 
 # ======================
 # INSTALLATION SECTIONS
@@ -176,6 +170,7 @@ configure_linux() {
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
     echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 }
+
 
 # ======================
 # MAIN INSTALLATION FLOW
