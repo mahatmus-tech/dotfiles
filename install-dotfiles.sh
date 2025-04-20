@@ -139,10 +139,8 @@ install_configs() {
     mv "$HOME/.config/hypr/120hz.conf" "$HOME/.config/hypr/monitors.conf"
 
     status "Installing Cooler Master MM720 Freeze Fix..."
-    copy_file 99-mm720-power.rules /etc/udev/rules.d
-    sudo udevadm control --reload
-    # Apply new rules without reboot
-    sudo udevadm trigger
+    copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
+    sudo mkinitcpio -P
 }
 
 install_mods() {
@@ -168,7 +166,7 @@ configure_linux() {
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
-    echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
+    echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"    
 }
 
 
