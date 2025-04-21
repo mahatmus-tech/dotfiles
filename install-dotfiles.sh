@@ -168,7 +168,16 @@ configure_linux() {
     # always on in teams-for-linux
     echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
     # brave save option in center
-    windowrulev2 = center, title:.*wants to save.*
+    echo "windowrulev2 = center, title:.*wants to save.*" >> "$CONFIG"
+    # set default workspaces
+    echo "workspace = 1, monitor:DP-3, default:true" >> "$CONFIG"
+    echo "workspace = 2, monitor:DP-3" >> "$CONFIG"
+    echo "workspace = 3, monitor:DP-3" >> "$CONFIG"
+    echo "workspace = 4, monitor:DP-1" >> "$CONFIG"
+    echo "workspace = 5, monitor:DP-1" >> "$CONFIG"
+    echo "workspace = 6, monitor:DP-3" >> "$CONFIG"
+    echo "workspace = 7, monitor:DP-3" >> "$CONFIG"
+    echo "workspace = 8, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, monitor:DP-3" >> "$CONFIG"
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
