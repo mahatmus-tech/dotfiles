@@ -163,8 +163,12 @@ configure_linux() {
     echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
+    # Default Monitor for gaming
     echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
+    # always on in teams-for-linux
     echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
+    # brave save option in center
+    windowrulev2 = center, title:.*wants to save.*
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
