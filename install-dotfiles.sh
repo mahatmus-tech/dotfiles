@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#!/bin/bash
+
 set -euo pipefail
 
 # ======================
@@ -16,16 +18,28 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Menu configuration
-MENU_OPTIONS=(
-	1  "Download Project" on
-    2  "Install Apps"     on
-    3  "Install Scripts"  on
-    4  "Install Configs"  on
-    5  "Install Mods"     off
-    6  "Configure Linux"  on
+# Default values for the options
+dotfiles="OFF"
+applications="OFF"
+scripts="OFF"
+configs="OFF"
+mods="OFF"
+hyprland="OFF"
+
+# Initialize the options array for whiptail checklist
+options_command=(
+    whiptail --title "Select Options" --checklist "Choose options to install or configure\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 28 85 20
 )
 
+# Add the remaining static options
+options_command+=(
+    "dotfiles"      "Install your dotfiles.git in ~/Projects"     "ON"
+    "applications"  "Install your personal applications"          "ON"
+    "scripts"       "Install your scripts in ~/Scripts"           "ON"
+    "configs"       "Install your configs in the system"          "ON"
+    "mods"          "Install your mods to their folder games"     "ON"
+    "hyprland"      "Install your personal settings in Hyprland"  "ON"
+)
 
 # ======================
 # INSTALLATION FUNCTIONS
@@ -36,28 +50,62 @@ warning() { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 info() { echo -e "${BLUE}[i]${NC} $1"; }
 
-install_packages() {
-    status "Installing packages: $*"
-    sudo pacman -S --needed --noconfirm "$@" || {
-        warning "Failed to install some packages. Continuing..."
-        return 1
-    }
+install_packages() {    
+    local pkg
+    for pkg in "$@"; do
+        if ! pacman -Qi "$pkg" &>/dev/null; then
+            status "Installing package: $pkg"
+            sudo pacman -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
+                warning "Failed to install $pkg. Continuing..."
+                return 1
+            }
+        fi
+    done
 }
 
 install_aur() {
-    status "Installing AUR packages: $*"
-    yay -S --needed --noconfirm "$@" || {
-        warning "Failed to install some AUR packages. Continuing..."
-        return 1
-    }
+    local pkg
+    for pkg in "$@"; do
+        if ! pacman -Qi "$pkg" &>/dev/null; then
+            status "Installing AUR package: $pkg"
+            yay -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
+                warning "Failed to install $pkg. Continuing..."
+                return 1
+            }
+        fi
+    done
 }
 
+
 show_menu() {
-    install_packages dialog
-    dialog --clear \
-        --title "Arch Hyprland Installation" \
-        --checklist "Select components to install:" 20 60 15 \
-        "${MENU_OPTIONS[@]}" 2>selected
+    install_packages libnewt
+    
+    # Capture the selected options before the while loop starts
+    while true; do
+        selected_options=$("${options_command[@]}" 3>&1 1>&2 2>&3)
+
+        # Check if the user pressed Cancel (exit status 1)
+        if [ $? -ne 0 ]; then
+            echo -e "\n"
+            echo "You cancelled the selection. Goodbye!"
+            exit 0  # Exit the script if Cancel is pressed
+        fi
+
+        # If no option was selected, notify and restart the selection
+        if [ -z "$selected_options" ]; then
+            whiptail --title "Warning" --msgbox "No options were selected. Please select at least one option." 10 60
+            continue  # Return to selection if no options selected
+        fi
+
+        # Strip the quotes and trim spaces if necessary (sanitize the input)
+        selected_options=$(echo "$selected_options" | tr -d '"' | tr -s ' ')
+
+        # Convert selected options into an array (preserving spaces in values)
+        IFS=' ' read -r -a options <<< "$selected_options"
+
+        info "You confirmed your choices. Proceeding with Installation..."
+        break
+    done
 }
 
 copy_file() {
@@ -76,7 +124,7 @@ clone_and_build() {
     
     status "Building $dir_name from source..."
     sudo rm -rf "$INSTALL_DIR/$dir_name"
-    git clone "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
+    git clone -q "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
     cd "$INSTALL_DIR/$dir_name" || error "Failed to enter $dir_name directory"
     sudo chown -R "$USER" . || error "Failed to change ownership"
     sudo chmod -R 755 . || error "Failed to change permissions"
@@ -89,7 +137,7 @@ clone_and_build() {
 # INSTALLATION SECTIONS
 # ======================
 
-download_project() {
+install_dotfiles() {
     status "Downloading Project..."
     INSTALL_DIR="$HOME/Projects"
     clone_and_build "https://github.com/mahatmus-tech/dotfiles.git" "dotfiles" \
@@ -97,10 +145,8 @@ download_project() {
 }
 
 install_apps() {
-	status "Installing Apps ..."
-
- 	# Update AUR and Pacman ackages
-	yay -Syu --needed --noconfirm
+    status "Update AUR and Pacman packages ..."
+	yay -Syuq --needed --noconfirm --noprogressbar
     # Coding
     install_packages emacs-wayland bash-completion
     # Basic Edition
@@ -114,7 +160,7 @@ install_apps() {
     # Audio
     install_aur spotify
 	# remove conflicting package with pipewire
-	sudo pacman -R --noconfirm jack2
+	#sudo pacman -R --noconfirm jack2
     # blstrobe
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
                     "chmod +x autogen.sh configure && ./autogen.sh && ./configure && make && sudo make install"
@@ -155,7 +201,7 @@ install_mods() {
     copy_file Scalability.ini "$HOME/.steam/steam/steamapps/compatdata/2767030/pfx/drive_c/users/steamuser/AppData/Local/Marvel/Saved/Config/Windows/"
 }
 
-configure_linux() {
+install_hyprland_settings() {
     status "Configuring Hyprland..."
 	local CONFIG=""
 	
@@ -195,21 +241,40 @@ configure_linux() {
 # MAIN INSTALLATION FLOW
 # ======================
 main() {
-	echo -e "\n${GREEN}🚀 Starting My DotFiles Install ${NC}"
+	echo -e "\n${GREEN}🚀 Starting DotFiles Install ${NC}"
     
     show_menu
 
-    mapfile -t SELECTIONS < selected
-    rm -f selected
+    # Clean up the selected options (remove quotes and trim spaces)
+    selected_options=$(echo "$selected_options" | tr -d '"' | tr -s ' ')
 
-    for selection in "${SELECTIONS[@]}"; do
-        case $selection in
-            1)  download_project ;;
-            2)  install_apps ;;
-            3)  install_scripts ;;
-            4)  install_configs ;;
-            5)  install_mods ;;
-            6)  configure_linux ;;
+    # Convert selected options into an array (splitting by spaces)
+    IFS=' ' read -r -a options <<< "$selected_options"
+
+    # Loop through selected options
+    for option in "${options[@]}"; do
+        case "$option" in
+            dotfiles)
+                install_dotfiles
+                ;;
+            applications)
+                install_apps
+                ;;
+            scripts)
+                install_scripts
+                ;;
+            configs)
+                install_configs
+                ;;
+            mods)
+                install_mods
+                ;;
+            hyprland)
+                install_hyprland_settings
+                ;;
+            *)
+                echo "Unknown option: $option"
+                ;;
         esac
     done
 	
@@ -219,4 +284,3 @@ main() {
 
 # Execute
 main
-
