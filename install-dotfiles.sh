@@ -173,6 +173,12 @@ configure_linux() {
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
     echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
+
+    #change .config/kitty/kitty.conf
+    #font_family ttf-jetbrains-mono
+
+    #Set waybar style = ML4W
+    #Set waybar layout = [TOP] Sleek    
 }
 
 
