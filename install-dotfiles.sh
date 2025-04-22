@@ -217,15 +217,12 @@ install_hyprland_settings() {
 	
     CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
     echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
-
-
-
+    # BLStrobe
     echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
-    echo "\n# My Settings" >> "$CONFIG"
     # Default Monitor for gaming
-    echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
+    #echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
     # always on in teams-for-linux
     echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
     # brave save option in center
@@ -241,7 +238,7 @@ install_hyprland_settings() {
     echo "workspace = 8, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, monitor:DP-3" >> "$CONFIG"
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
-    echo "\n# My Settings" >> "$CONFIG"
+    echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
     echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 
