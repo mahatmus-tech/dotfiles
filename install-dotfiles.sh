@@ -12,7 +12,8 @@ INSTALL_DIR="$HOME/Apps"
 # Color output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+YELLOW='\033[0;33m'
+YELLOW_W='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
@@ -43,19 +44,26 @@ options_command+=(
 # INSTALLATION FUNCTIONS
 # ======================
 
-status() { echo -e "${GREEN}[+]${YELLOW} $1"; }
+status() { echo -e "${GREEN}[+]${YELLOW} $1${NC}"; }
 status_step() { echo -e "${GREEN}    >${NC} $1"; }
-warning() { echo -e "${YELLOW}[!]${NC} $1"; }
+warning() { echo -e "${YELLOW_W}[!]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 info() { echo -e "${BLUE}[i]${NC} $1"; }
 
-copy_file() {
-    local file=$1 dest=$2
-    sudo rm -f "$dest/$file"
-    if ! sudo cp "$file" "$dest"; then
-        error "Failed to copy $file"
-        return 1
-    fi
+sudo_cache() {
+    status "Caching Sudo Password"
+    # Prompt once for sudo password
+    if sudo -v; then
+    # Keep the sudo session alive in the background
+    while true; do
+        sleep 60
+        sudo -n true
+        kill -0 "$$" || exit
+    done 2>/dev/null &
+    else
+    echo "Sudo authentication failed"
+    exit 1
+    fi    
 }
 
 install_packages() {    
@@ -129,6 +137,15 @@ show_menu() {
     done
 }
 
+copy_file() {
+    local file=$1 dest=$2
+    sudo rm -f "$dest/$file"
+    if ! sudo cp "$file" "$dest"; then
+        error "Failed to copy $file"
+        return 1
+    fi
+}
+
 # ======================
 # INSTALLATION SECTIONS
 # ======================
@@ -184,7 +201,7 @@ install_configs() {
 
     status_step "Cooler Master MM720 Freeze Fix"
     copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
-    sudo mkinitcpio -P
+    sudo mkinitcpio -P >/dev/null
 }
 
 install_mods() {
@@ -246,10 +263,10 @@ install_hyprland_settings() {
 # ======================
 main() {
 	echo -e "\n${GREEN}🚀 Starting DotFiles Install ${NC}"
+    sudo_cache
     
     show_menu
 
-    # Loop through selected options
     for option in "${options[@]}"; do
         case "$option" in
             dotfiles)
@@ -277,7 +294,7 @@ main() {
     done
 	
 	echo -e "\n${GREEN} Installation completed successfully! ${NC}"
-	echo -e "${YELLOW} Please reboot your system to apply all changes. ${NC}"
+	echo -e "${YELLOW_W} Please reboot your system to apply all changes. ${NC}"
 }
 
 # Execute
