@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#!/bin/bash
-
 set -euo pipefail
 
 # ======================
@@ -28,33 +26,43 @@ hyprland="OFF"
 
 # Initialize the options array for whiptail checklist
 options_command=(
-    whiptail --title "Select Options" --checklist "Choose options to install or configure\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 28 85 20
+    whiptail --title "Select Options" --checklist "Choose options to install or configure\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 14 68 6
 )
 
 # Add the remaining static options
 options_command+=(
-    "dotfiles"      "Install your dotfiles.git in ~/Projects"     "ON"
-    "applications"  "Install your personal applications"          "ON"
-    "scripts"       "Install your scripts in ~/Scripts"           "ON"
-    "configs"       "Install your configs in the system"          "ON"
-    "mods"          "Install your mods to their folder games"     "ON"
-    "hyprland"      "Install your personal settings in Hyprland"  "ON"
+    "dotfiles"      "> Install your dotfiles.git in ~/Projects"     "ON"
+    "applications"  "> Install your personal applications"          "ON"
+    "scripts"       "> Install your scripts in ~/Scripts"           "ON"
+    "configs"       "> Install your configs in the system"          "ON"
+    "mods"          "> Install your mods to their folder games"     "ON"
+    "hyprland"      "> Install your personal settings in Hyprland"  "ON"
 )
 
 # ======================
 # INSTALLATION FUNCTIONS
 # ======================
 
-status() { echo -e "${GREEN}[+]${NC} $1"; }
+status() { echo -e "${GREEN}[+]${YELLOW} $1"; }
+status_step() { echo -e "${GREEN}    >${NC} $1"; }
 warning() { echo -e "${YELLOW}[!]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 info() { echo -e "${BLUE}[i]${NC} $1"; }
+
+copy_file() {
+    local file=$1 dest=$2
+    sudo rm -f "$dest/$file"
+    if ! sudo cp "$file" "$dest"; then
+        error "Failed to copy $file"
+        return 1
+    fi
+}
 
 install_packages() {    
     local pkg
     for pkg in "$@"; do
         if ! pacman -Qi "$pkg" &>/dev/null; then
-            status "Installing package: $pkg"
+            status_step "$pkg"
             sudo pacman -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
                 warning "Failed to install $pkg. Continuing..."
                 return 1
@@ -67,7 +75,7 @@ install_aur() {
     local pkg
     for pkg in "$@"; do
         if ! yay -Qi "$pkg" &>/dev/null; then
-            status "Installing AUR package: $pkg"
+            status_step "$pkg"
             yay -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
                 warning "Failed to install $pkg. Continuing..."
                 return 1
@@ -76,21 +84,12 @@ install_aur() {
     done
 }
 
-copy_file() {
-    local file=$1 dest=$2
-    sudo rm -f "$dest/$file"
-    if ! sudo cp "$file" "$dest"; then
-        error "Failed to copy $file"
-        return 1
-    fi
-}
-
 clone_and_build() {
     local repo_url=$1
     local dir_name=$2
     local build_cmd=${3:-"makepkg -si --needed --noconfirm --noprogressbar"}
-    
-    status "Building $dir_name from source..."
+
+    status_step "$dir_name"
     sudo rm -rf "$INSTALL_DIR/$dir_name"
     git clone -q "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
     cd "$INSTALL_DIR/$dir_name" || error "Failed to enter $dir_name directory"
@@ -126,7 +125,6 @@ show_menu() {
         # Convert selected options into an array (preserving spaces in values)
         IFS=' ' read -r -a options <<< "$selected_options"
 
-        info "You confirmed your choices. Proceeding with Installation..."
         break
     done
 }
@@ -136,15 +134,18 @@ show_menu() {
 # ======================
 
 install_dotfiles() {
-    status "Downloading Project..."
+    status "Installing Dotfiles..."
     INSTALL_DIR="$HOME/Projects"
     clone_and_build "https://github.com/mahatmus-tech/dotfiles.git" "dotfiles" \
-                    "echo "Git Dotfiles Downloaded!" "
+                    " "
 }
 
 install_apps() {
-    status "Update AUR and Pacman packages ..."
-	yay -Syuq --needed --noconfirm --noprogressbar
+    status "Installing Apps..."
+
+    # Update packages
+	yay -Syuq --needed --noconfirm --noprogressbar >/dev/null
+
     # Coding
     install_packages emacs-wayland bash-completion
     # Basic Edition
@@ -157,15 +158,13 @@ install_apps() {
     install_aur vesktop-bin teams-for-linux
     # Audio
     install_aur spotify
-	# remove conflicting package with pipewire
-	#sudo pacman -R --noconfirm jack2
     # blstrobe
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
-                    "./autogen.sh && ./configure && make -s && sudo make -s install"
+                    "./autogen.sh >/dev/null && ./configure >/dev/null && make -s >/dev/null && sudo make -s install >/dev/null"
 }
 
 install_scripts() {
-    status "Installing Scrips ..."
+    status "Installing Scrips..."
     cd "$HOME/Projects/dotfiles/scripts"
 
     copy_file blstrobe-start.sh "$HOME/Scripts"
@@ -174,16 +173,16 @@ install_scripts() {
 }
 
 install_configs() {
-    status "Installing Configs ..."
+    status "Installing Configs..."
     cd "$HOME/Projects/dotfiles/configs"
-
-    status "Installing 2 Monitor config ..."
+    
+    status_step "Monitors Profile"
     copy_file 120hz.conf "$HOME/.config/hypr/Monitor_Profiles"
     copy_file 120hz.conf "$HOME/.config/hypr"
     sudo rm -f "$HOME/.config/hypr/monitors.conf"
     mv "$HOME/.config/hypr/120hz.conf" "$HOME/.config/hypr/monitors.conf"
 
-    status "Installing Cooler Master MM720 Freeze Fix..."
+    status_step "Cooler Master MM720 Freeze Fix"
     copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
     sudo mkinitcpio -P
 }
@@ -192,21 +191,27 @@ install_mods() {
     status "Installing Mods..."
     cd "$HOME/Projects/dotfiles/mods"
 
-    cd marvel-rivals
-    # Mod marvel rivals
-    # https://www.nexusmods.com/marvelrivals/mods/273?tab=description
-    # In ta mod folder, copy to the game file on steam. Check the gameID of the game 2767030    
-    copy_file Scalability.ini "$HOME/.steam/steam/steamapps/compatdata/2767030/pfx/drive_c/users/steamuser/AppData/Local/Marvel/Saved/Config/Windows/"
+    local game_path="$HOME/.steam/steam/steamapps/compatdata/2767030/pfx/drive_c/users/steamuser/AppData/Local/Marvel/Saved/Config/Windows/"
+    if [ -d "$game_path" ]; then
+        cd marvel-rivals
+        status_step "Marvel Rivals - FPS Performance Enhancer"
+        # Mod marvel rivals
+        # https://www.nexusmods.com/marvelrivals/mods/273?tab=description
+        # In ta mod folder, copy to the game file on steam. Check the gameID of the game 2767030    
+        copy_file Scalability.ini "$game_path"
+    fi
 }
 
 install_hyprland_settings() {
-    status "Configuring Hyprland..."
+    status "Installing Hyprland Settings..."
 	local CONFIG=""
 	
     CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
+    echo "\n# My Settings" >> "$CONFIG"
     echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
+    echo "\n# My Settings" >> "$CONFIG"
     # Default Monitor for gaming
     echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
     # always on in teams-for-linux
@@ -224,6 +229,7 @@ install_hyprland_settings() {
     echo "workspace = 8, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, monitor:DP-3" >> "$CONFIG"
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
+    echo "\n# My Settings" >> "$CONFIG"
     echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
     echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 
@@ -231,7 +237,7 @@ install_hyprland_settings() {
     #font_family ttf-jetbrains-mono
 
     #Set waybar style = ML4W
-    #Set waybar layout = [TOP] Sleek    
+    #Set waybar layout = [TOP] Sleek
 }
 
 
@@ -242,12 +248,6 @@ main() {
 	echo -e "\n${GREEN}🚀 Starting DotFiles Install ${NC}"
     
     show_menu
-
-    # Clean up the selected options (remove quotes and trim spaces)
-    selected_options=$(echo "$selected_options" | tr -d '"' | tr -s ' ')
-
-    # Convert selected options into an array (splitting by spaces)
-    IFS=' ' read -r -a options <<< "$selected_options"
 
     # Loop through selected options
     for option in "${options[@]}"; do
