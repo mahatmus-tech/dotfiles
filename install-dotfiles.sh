@@ -216,7 +216,10 @@ install_hyprland_settings() {
 	local CONFIG=""
 	
     CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
-    echo "\n# My Settings" >> "$CONFIG"
+    echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
+
+
+
     echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
