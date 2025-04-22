@@ -17,14 +17,6 @@ YELLOW_W='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Default values for the options
-dotfiles="OFF"
-applications="OFF"
-scripts="OFF"
-configs="OFF"
-mods="OFF"
-hyprland="OFF"
-
 # Initialize the options array for whiptail checklist
 options_command=(
     whiptail --title "Select Options" --checklist "Choose options to install or configure\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 14 68 6
