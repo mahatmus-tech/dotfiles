@@ -66,7 +66,7 @@ install_packages() {
 install_aur() {
     local pkg
     for pkg in "$@"; do
-        if ! pacman -Qi "$pkg" &>/dev/null; then
+        if ! yay -Qi "$pkg" &>/dev/null; then
             status "Installing AUR package: $pkg"
             yay -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
                 warning "Failed to install $pkg. Continuing..."
@@ -76,6 +76,29 @@ install_aur() {
     done
 }
 
+copy_file() {
+    local file=$1 dest=$2
+    sudo rm -f "$dest/$file"
+    if ! sudo cp "$file" "$dest"; then
+        error "Failed to copy $file"
+        return 1
+    fi
+}
+
+clone_and_build() {
+    local repo_url=$1
+    local dir_name=$2
+    local build_cmd=${3:-"makepkg -si --needed --noconfirm --noprogressbar"}
+    
+    status "Building $dir_name from source..."
+    sudo rm -rf "$INSTALL_DIR/$dir_name"
+    git clone -q "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
+    cd "$INSTALL_DIR/$dir_name" || error "Failed to enter $dir_name directory"
+    sudo chown -R "$USER" . || error "Failed to change ownership"
+    sudo chmod -R 755 . || error "Failed to change permissions"
+    eval "$build_cmd" || warning "Failed to build/install $dir_name"
+    cd - >/dev/null || error "Failed to return to previous directory"
+}
 
 show_menu() {
     install_packages libnewt
@@ -108,31 +131,6 @@ show_menu() {
     done
 }
 
-copy_file() {
-    local file=$1 dest=$2
-    sudo rm -f "$dest/$file"
-    if ! sudo cp "$file" "$dest"; then
-        error "Failed to copy $file"
-        return 1
-    fi
-}
-
-clone_and_build() {
-    local repo_url=$1
-    local dir_name=$2
-    local build_cmd=${3:-"makepkg -si --noconfirm"}
-    
-    status "Building $dir_name from source..."
-    sudo rm -rf "$INSTALL_DIR/$dir_name"
-    git clone -q "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
-    cd "$INSTALL_DIR/$dir_name" || error "Failed to enter $dir_name directory"
-    sudo chown -R "$USER" . || error "Failed to change ownership"
-    sudo chmod -R 755 . || error "Failed to change permissions"
-    eval "$build_cmd" || warning "Failed to build/install $dir_name"
-    cd - >/dev/null || error "Failed to return to previous directory"
-}
-
-
 # ======================
 # INSTALLATION SECTIONS
 # ======================
@@ -163,7 +161,7 @@ install_apps() {
 	#sudo pacman -R --noconfirm jack2
     # blstrobe
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
-                    "chmod +x autogen.sh configure && ./autogen.sh && ./configure && make && sudo make install"
+                    "./autogen.sh && ./configure && make -s && sudo make -s install"
 }
 
 install_scripts() {
