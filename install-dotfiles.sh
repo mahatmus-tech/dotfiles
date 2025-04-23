@@ -239,8 +239,8 @@ install_hyprland_settings() {
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
-    echo "bind = $mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
-    echo "bind = $mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
+    echo "bind = \$mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
+    echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 
     #change .config/kitty/kitty.conf
     #font_family ttf-jetbrains-mono
