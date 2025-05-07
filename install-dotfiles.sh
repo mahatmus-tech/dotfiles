@@ -194,6 +194,9 @@ install_configs() {
     status_step "Cooler Master MM720 Freeze Fix"
     copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
     sudo mkinitcpio -P >/dev/null
+
+    status_step "Spotify wayland config"
+    copy_file spotify-launcher.conf "$HOME/.config"
 }
 
 install_mods() {
