@@ -165,8 +165,8 @@ install_apps() {
     install_aur brave-bin
     # Call
     install_aur vesktop-bin teams-for-linux
-    # Audio
-    install_aur spotify
+    # Spotify compatible with wayland
+    install_packages spotify-launcher
     # blstrobe
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
                     "./autogen.sh >/dev/null && ./configure >/dev/null && make -s >/dev/null && sudo make -s install >/dev/null"
