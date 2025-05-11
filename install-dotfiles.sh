@@ -167,6 +167,8 @@ install_apps() {
     install_aur vesktop-bin teams-for-linux
     # Spotify compatible with wayland
     install_packages spotify-launcher
+    # AnyDesk
+    install_aur anydesk-bin
     # blstrobe
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
                     "./autogen.sh >/dev/null && ./configure >/dev/null && make -s >/dev/null && sudo make -s install >/dev/null"
