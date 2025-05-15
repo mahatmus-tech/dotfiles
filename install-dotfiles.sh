@@ -188,10 +188,11 @@ install_configs() {
     cd "$HOME/Projects/dotfiles/configs"
     
     status_step "Monitors Profile"
-    copy_file 120hz.conf "$HOME/.config/hypr/Monitor_Profiles"
-    copy_file 120hz.conf "$HOME/.config/hypr"
+    copy_file 2-monitors.conf "$HOME/.config/hypr"
+    copy_file 2-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
+    copy_file 3-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"    
     sudo rm -f "$HOME/.config/hypr/monitors.conf"
-    mv "$HOME/.config/hypr/120hz.conf" "$HOME/.config/hypr/monitors.conf"
+    mv "$HOME/.config/hypr/2-monitors.conf" "$HOME/.config/hypr/monitors.conf"
 
     status_step "Cooler Master MM720 Freeze Fix"
     copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
