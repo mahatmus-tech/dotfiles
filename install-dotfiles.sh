@@ -200,6 +200,9 @@ install_configs() {
 
     status_step "Spotify wayland config"
     copy_file spotify-launcher.conf "$HOME/.config"
+
+    status_step "Default Directories"
+    mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}
 }
 
 install_mods() {
