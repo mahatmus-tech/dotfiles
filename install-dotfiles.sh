@@ -181,6 +181,7 @@ install_scripts() {
     copy_file blstrobe-start.sh "$HOME/Scripts"
     copy_file camera-sara.sh "$HOME/Scripts"
     copy_file remote-senior.sh "$HOME/Scripts"
+    copy_file gaming-monitor.sh "$HOME/Scripts"
 }
 
 install_configs() {
