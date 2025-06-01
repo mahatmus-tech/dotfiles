@@ -231,21 +231,53 @@ install_hyprland_settings() {
     echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
-    # Default Monitor for gaming
-    #echo "windowrulev2 = monitor DP-3, tag:games*" >> "$CONFIG"
-    # always on in teams-for-linux
+    echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
+
+    echo -e "\n# Game Tag" >> "$CONFIG"
+    echo "windowrulev2 = tag +games, class:^(marvel-win64-shipping.exe)$" >> "$CONFIG"
+    echo "windowrulev2 = tag +games, class:^(overwatch.exe)$" >> "$CONFIG"
+    echo "windowrulev2 = tag +games, class:^(eldenring.exe)$" >> "$CONFIG"
+    echo "windowrulev2 = tag +games, class:^(nightreign.exe)$" >> "$CONFIG"
+
+    echo -e "\n# Gaming" >> "$CONFIG"
+    echo "windowrulev2 = nodim, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = noblur, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = noanim, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = noborder, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = noshadow, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = immediate, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = norounding, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = fullscreen, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = allowsinput, tag:games*" >> "$CONFIG"
+    echo "windowrulev2 = content game, tag:games*" >> "$CONFIG"
+
+    echo -e "\n# Workspace" >> "$CONFIG"
+    echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"
+    echo "windowrulev2 = workspace 1, class:^(rdesktop)$" >> "$CONFIG"
+    echo "windowrulev2 = workspace 5, class:^(spotify)$" >> "$CONFIG"
+
+    echo -e "\n# Always ON" >> "$CONFIG"
     echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
-    # brave save option in center
+    echo "windowrulev2 = idleinhibit always, class:^(rdesktop)$" >> "$CONFIG"
+
+    echo -e "\n# Brave save window fix" >> "$CONFIG"
     echo "windowrulev2 = center, title:.*wants to save.*" >> "$CONFIG"
-    # set default workspaces
-    echo "workspace = 1, monitor:DP-3, default:true" >> "$CONFIG"
+    echo "windowrulev2 = center, class:^(vesktop)$" >> "$CONFIG"
+
+    echo -e "\n# camera sara" >> "$CONFIG"
+    echo "windowrulev2 = workspace 4, class:ffplay" >> "$CONFIG"
+    echo "windowrulev2 = move 72% 7%, class:ffplay" >> "$CONFIG"
+
+    echo -e "\n# Workspace Rules" >> "$CONFIG"
+    echo "workspace = 1, monitor:DP-3, persistent:true, default:true" >> "$CONFIG"
     echo "workspace = 2, monitor:DP-3" >> "$CONFIG"
     echo "workspace = 3, monitor:DP-3" >> "$CONFIG"
-    echo "workspace = 4, monitor:DP-1" >> "$CONFIG"
+    echo "workspace = 4, monitor:DP-1, persistent:true, default:true" >> "$CONFIG"
     echo "workspace = 5, monitor:DP-1" >> "$CONFIG"
     echo "workspace = 6, monitor:DP-3" >> "$CONFIG"
     echo "workspace = 7, monitor:DP-3" >> "$CONFIG"
-    echo "workspace = 8, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, monitor:DP-3" >> "$CONFIG"
+    echo "workspace = 8, monitor:DP-3,     rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, shadow:false" >> "$CONFIG"
+    echo "workspace = 9, monitor:HDMI-A-1, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, shadow:false, default:true" >> "$CONFIG"
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
     echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
