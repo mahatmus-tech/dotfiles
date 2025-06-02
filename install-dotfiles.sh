@@ -204,6 +204,11 @@ install_configs() {
 
     status_step "Default Directories"
     mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}
+
+    # this is broking goverlay privilate to the folder. Fix it later.
+    #status_step "Set Mangohud.conf"
+    #sudo rm -f "$HOME/.config/MangoHud/MangoHud.conf"
+    #safe_download "$HOME"/.config/MangoHud https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/MangoHud.conf    
 }
 
 install_mods() {
