@@ -231,25 +231,11 @@ install_hyprland_settings() {
     echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     
     CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
-    echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
-
     echo -e "\n# Game Tag" >> "$CONFIG"
     echo "windowrulev2 = tag +games, class:^(marvel-win64-shipping.exe)$" >> "$CONFIG"
     echo "windowrulev2 = tag +games, class:^(overwatch.exe)$" >> "$CONFIG"
     echo "windowrulev2 = tag +games, class:^(eldenring.exe)$" >> "$CONFIG"
     echo "windowrulev2 = tag +games, class:^(nightreign.exe)$" >> "$CONFIG"
-
-    echo -e "\n# Gaming" >> "$CONFIG"
-    echo "windowrulev2 = nodim, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = noblur, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = noanim, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = noborder, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = noshadow, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = immediate, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = norounding, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = fullscreen, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = allowsinput, tag:games*" >> "$CONFIG"
-    echo "windowrulev2 = content game, tag:games*" >> "$CONFIG"
 
     echo -e "\n# Workspace" >> "$CONFIG"
     echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"
