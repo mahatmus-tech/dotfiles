@@ -7,8 +7,8 @@ Extra: VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait fix crash when using wayland
 
 Game: Marvel Rivals
  -> Proton-GE
-    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvel-rivals/ gamemoderun mangohud %command% -PSOCompileMode=1 -USEALLAVAILABLECORES -novid -nojoy
-    - XWAYLAND: __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command% -PSOCompileMode=1 -USEALLAVAILABLECORES -novid -nojoy
+    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command% -PSOCompileMode=1
+    - XWAYLAND: __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command% -PSOCompileMode=1
 
 Game: Overwatch 2
  -> Proton-GE
