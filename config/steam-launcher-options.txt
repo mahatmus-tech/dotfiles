@@ -6,9 +6,9 @@ Enable Wayland: PROTON_ENABLE_WAYLAND=1
 Extra: VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait fix crash when using wayland native(PROTON_ENABLE_WAYLAND=1)
 
 Game: Marvel Rivals
- -> Proton-GE
-    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command% -PSOCompileMode=1
-    - XWAYLAND: __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command% -PSOCompileMode=1
+ -> Proton-TKG
+    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command%
+    - XWAYLAND: __GL_THREADED_OPTIMIZATIONS=0 SteamDeck=1 LD_PRELOAD="" PROTON_ENABLE_NVAPI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ gamemoderun mangohud %command%
 
 Game: Overwatch 2
  -> Proton-GE
@@ -20,7 +20,7 @@ Game: Elden Ring
 
 Game: Elden Ring Night Reign
  -> Proton: Proton-GE
-    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/eldenring/ gamemoderun mangohud %command%
+    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 LD_PRELOAD="" __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/nightreign/ gamemoderun mangohud %command%
     - XWAYLAND: DXVK_HDR=1 ENABLE_HDR_WSI=1 LD_PRELOAD="" __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/nightreign/ gamemoderun mangohud %command%
 
 Game: Lords of the Fallen
