@@ -30,6 +30,7 @@ options_command+=(
     "configs"       "> Install your configs in the system"          "ON"
     "mods"          "> Install your mods to their folder games"     "ON"
     "hyprland"      "> Install your personal settings in Hyprland"  "ON"
+    "tkg"           "> Install TKG Kernel"  "ON"    
 )
 
 # ======================
@@ -191,13 +192,9 @@ install_configs() {
     status_step "Monitors Profile"
     copy_file 2-monitors.conf "$HOME/.config/hypr"
     copy_file 2-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
-    copy_file 3-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"    
+    copy_file 3-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
     sudo rm -f "$HOME/.config/hypr/monitors.conf"
     mv "$HOME/.config/hypr/2-monitors.conf" "$HOME/.config/hypr/monitors.conf"
-
-    status_step "Cooler Master MM720 Freeze Fix"
-    copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
-    sudo mkinitcpio -P >/dev/null
 
     status_step "Spotify wayland config"
     copy_file spotify-launcher.conf "$HOME/.config"
@@ -209,6 +206,10 @@ install_configs() {
     #status_step "Set Mangohud.conf"
     #sudo rm -f "$HOME/.config/MangoHud/MangoHud.conf"
     #safe_download "$HOME"/.config/MangoHud https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/MangoHud.conf    
+
+    status_step "Cooler Master MM720 Freeze Fix"
+    copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
+    sudo mkinitcpio -P >/dev/null
 }
 
 install_mods() {
@@ -243,7 +244,8 @@ install_hyprland_settings() {
     echo "windowrulev2 = tag +games, class:^(nightreign.exe)$" >> "$CONFIG"
 
     echo -e "\n# Workspace" >> "$CONFIG"
-    echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"
+    echo "windowrulev2 = workspace 4, tag:im*" >> "$CONFIG"    
+    echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"    
     echo "windowrulev2 = workspace 1, class:^(rdesktop)$" >> "$CONFIG"
     echo "windowrulev2 = workspace 5, class:^(spotify)$" >> "$CONFIG"
 
@@ -275,12 +277,45 @@ install_hyprland_settings() {
     echo "bind = \$mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
     echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 
+    CONFIG="$HOME/.config/hypr/UserConfigs/UserSettings.conf"
+    sudo sed -i -E '/cursor \{/!b;n;c\ \ default_monitor = DP-3' "$CONFIG"
+
     #change .config/kitty/kitty.conf
     #font_family ttf-jetbrains-mono
 
     #Set waybar style = ML4W
     #Set waybar layout = [TOP] Sleek
 }
+
+install_tkg_kernel() {
+    status "Installing Linux-Tkg Kernel..."
+    clone_and_build "git@github.com:mahatmus-tech/linux-tkg.git" "linux-tkg" \
+                    "makepkg -si"
+
+    status_step "Add TKG Kernel in Systemd Boot Loader"
+    cd "$HOME/Projects/dotfiles/configs"
+    copy_file linux-tkg.conf "/boot/loader/entries"
+    copy_file linux-tkg-fallback.conf "/boot/loader/entries"
+
+    local root_partuuid=$(blkid -s PARTUUID -o value "$(findmnt -no SOURCE /)")
+    sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg.conf
+    sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg-fallback.conf
+    sudo bootctl set-default linux-tkg.conf
+
+    status_step "Remove Others Linux Kernel"
+    sudo pacman -R linux-zen-headers linux-zen
+    cd /boot
+    sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' -o -name '*ucode*' \) -exec rm -f {} \;
+    cd /boot/loader/entries
+    sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
+    cd /etc/mkinitcpio.d
+    sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
+
+    # Download bore kernel.conf
+    copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
+    sudo sysctl --system
+}
+
 
 
 # ======================
@@ -304,6 +339,7 @@ main() {
                 install_scripts
                 ;;
             configs)
+
                 install_configs
                 ;;
             mods)
@@ -312,6 +348,9 @@ main() {
             hyprland)
                 install_hyprland_settings
                 ;;
+            hyprland)
+                install_tkg_kernel
+                ;;                
             *)
                 echo "Unknown option: $option"
                 ;;
