@@ -291,7 +291,7 @@ install_hyprland_settings() {
 
 install_tkg_kernel() {
     status "Installing Linux-Tkg Kernel..."
-    clone_and_build "git@github.com:mahatmus-tech/linux-tkg.git" "linux-tkg" \
+    clone_and_build "https://github.com/Frogging-Family/linux-tkg.git" "linux-tkg" \
                     "makepkg -si"
 
     status_step "Add TKG Kernel in Systemd Boot Loader"
@@ -305,7 +305,7 @@ install_tkg_kernel() {
     sudo bootctl set-default linux-tkg.conf
 
     status_step "Remove Others Linux Kernel"
-    sudo pacman -R linux-zen-headers linux-zen
+    sudo pacman -R linux-zen-headers linux-zen --noconfirm
     cd /boot
     sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' -o -name '*ucode*' \) -exec rm -f {} \;
     cd /boot/loader/entries
