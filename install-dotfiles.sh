@@ -279,12 +279,14 @@ install_hyprland_settings() {
 
     CONFIG="$HOME/.config/hypr/UserConfigs/UserSettings.conf"
     sudo sed -i -E '/cursor \{/!b;n;c\ \ default_monitor = DP-3' "$CONFIG"
+    echo -e "experimental {\n  xx_color_management_v4 = true\n}" >> "$CONFIG"
 
     #change .config/kitty/kitty.conf
     #font_family ttf-jetbrains-mono
 
-    #Set waybar style = ML4W
-    #Set waybar layout = [TOP] Sleek
+    #Ctrl+B: waybar layout = [TOP] Sleek
+    #Alt+B: Waybar style = [retro] Simple Style
+    #Shift+A: Hyde - Optimized
 }
 
 install_tkg_kernel() {
