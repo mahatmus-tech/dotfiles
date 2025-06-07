@@ -44,19 +44,16 @@ error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
 info() { echo -e "${BLUE}[i]${NC} $1"; }
 
 sudo_cache() {
-    status "Caching Sudo Password"
-    # Prompt once for sudo password
-    if sudo -v; then
-    # Keep the sudo session alive in the background
-    while true; do
-        sleep 60
-        sudo -n true
-        kill -0 "$$" || exit
-    done 2>/dev/null &
-    else
-    echo "Sudo authentication failed"
-    exit 1
-    fi    
+    status "Saving Sudo Password"
+    sudo -v
+    
+	# Allow makepkg without password (safer than editing sudoers directly)
+	sudo rm -f /etc/sudoers.d/42-user-nopassword
+    echo "$USER ALL=(ALL) NOPASSWD: /usr/bin/pacman" | sudo tee /etc/sudoers.d/42-user-nopassword >/dev/null
+}
+
+sudo_release() {
+	sudo rm -f /etc/sudoers.d/42-user-nopassword
 }
 
 install_packages() {    
@@ -325,8 +322,8 @@ install_tkg_kernel() {
 # ======================
 main() {
 	echo -e "\n${GREEN}🚀 Starting DotFiles Install ${NC}"
-    sudo_cache
     
+    sudo_cache    
     show_menu
 
     for option in "${options[@]}"; do
@@ -358,6 +355,8 @@ main() {
                 ;;
         esac
     done
+
+    sudo_release
 	
 	echo -e "\n${GREEN} Installation completed successfully! ${NC}"
 	echo -e "${YELLOW_W} Please reboot your system to apply all changes. ${NC}"
