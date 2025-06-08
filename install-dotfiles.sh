@@ -303,12 +303,9 @@ install_tkg_kernel() {
 
     status_step "Remove Others Linux Kernel"
     sudo pacman -R linux-zen-headers linux-zen --noconfirm
-    cd /boot
-    sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' -o -name '*ucode*' \) -exec rm -f {} \;
-    cd /boot/loader/entries
-    sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
-    cd /etc/mkinitcpio.d
-    sudo find . -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
+    sudo find /boot -maxdepth 1 -type f ! \( -name '*tkg*' -o -name '*ucode*' \) -exec rm -f {} \;
+    sudo find /boot/loader/entries -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
+    sudo find /etc/mkinitcpio.d -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
 
     # Download bore kernel.conf
     copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
