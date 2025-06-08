@@ -199,10 +199,8 @@ install_configs() {
     status_step "Default Directories"
     mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}
 
-    # this is broking goverlay privilate to the folder. Fix it later.
-    #status_step "Set Mangohud.conf"
-    #sudo rm -f "$HOME/.config/MangoHud/MangoHud.conf"
-    #safe_download "$HOME"/.config/MangoHud https://raw.githubusercontent.com/mahatmus-tech/arch-auto-install/refs/heads/main/files/MangoHud.conf    
+    status_step "Set Mangohud.conf"
+    copy_file MangoHud.conf "$HOME/.config/MangoHud"
 
     status_step "Cooler Master MM720 Freeze Fix"
     copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
@@ -278,12 +276,17 @@ install_hyprland_settings() {
     sudo sed -i -E '/cursor \{/!b;n;c\ \ default_monitor = DP-3' "$CONFIG"
     echo -e "experimental {\n  xx_color_management_v4 = true\n}" >> "$CONFIG"
 
+
+    # Change Pokemon-Colorscripts preferences
+    CONFIG="$HOME/.zshrc"
+    sudo sed -i -E "s/pokemon-colorscripts --no-title -s -r/pokemon-colorscripts -r1/g" "$CONFIG"
+
     #change .config/kitty/kitty.conf
     #font_family ttf-jetbrains-mono
 
-    #Ctrl+B: waybar layout = [TOP] Sleek
-    #Alt+B: Waybar style = [retro] Simple Style
-    #Shift+A: Hyde - Optimized
+    #Ctrl+B: Waybar style = [WALLUST] Colored
+    #Alt+B: waybar layout = [TOP] Minimal - Long
+    #Shift+A: ML4 - fast
 }
 
 install_tkg_kernel() {
