@@ -19,29 +19,32 @@ NC='\033[0m'
 
 # Initialize the options array for whiptail checklist
 options_command=(
-    whiptail --title "Select Options" --checklist "Choose options to install or configure\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 14 68 6
+    whiptail --title "Select Options" --checklist "Choose options to install or configure\nNOTE: 'SPACEBAR' to select & 'TAB' key to change selection" 16 68 7
 )
 
 # Add the remaining static options
 options_command+=(
-    "dotfiles"      "> Install your dotfiles.git in ~/Projects"     "ON"
-    "applications"  "> Install your personal applications"          "ON"
-    "scripts"       "> Install your scripts in ~/Scripts"           "ON"
-    "configs"       "> Install your configs in the system"          "ON"
-    "mods"          "> Install your mods to their folder games"     "ON"
-    "hyprland"      "> Install your personal settings in Hyprland"  "ON"
-    "tkg"           "> Install TKG Kernel"  "ON"    
+    "dotfiles"      "> Install dotfiles.git in ~/Projects" "ON"
+    "applications"  "> Install applications"               "ON"
+    "scripts"       "> Install scripts in ~/Scripts"       "ON"
+    "configs"       "> Install configs in the system"      "ON"
+    "mods"          "> Install Game Mods"                  "ON"
+    "kitty"         "> Install Kitty Settings"             "ON"    
+    "hyprland"      "> Install Hyprland Settings"          "ON"
+    "tkg"           "> Install TKG Kernel"                 "ON"
 )
 
 # ======================
 # INSTALLATION FUNCTIONS
 # ======================
 
-status() { echo -e "${GREEN}[+]${YELLOW} $1${NC}"; }
-status_step() { echo -e "${GREEN}    >${NC} $1"; }
-warning() { echo -e "${YELLOW_W}[!]${NC} $1"; }
-error() { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
-info() { echo -e "${BLUE}[i]${NC} $1"; }
+info()             { echo -e "${BLUE}[i]${NC} $1"; }
+warning()          { echo -e "${YELLOW_W}[!]${NC} $1"; }
+error()            { echo -e "${RED}[ERROR]${NC} $1" >&2; exit 1; }
+status()           { echo -e "${GREEN}[+]${YELLOW} $1${NC}"; }
+status_step()      { echo -e "${GREEN}    -${NC} $1"; }
+status_step_info() { echo -e "${GREEN}      >${BLUE} $1"; }
+
 
 sudo_cache() {
     status "Saving Sudo Password"
@@ -56,12 +59,13 @@ sudo_release() {
 	sudo rm -f /etc/sudoers.d/42-user-nopassword
 }
 
-install_packages() {    
+install_packages() {
     local pkg
     for pkg in "$@"; do
-        if ! pacman -Qi "$pkg" &>/dev/null; then
-            status_step "$pkg"
-            sudo pacman -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
+        if ! pacman -Q "$pkg" &>/dev/null; then
+            sudo -v
+            status_step_info "$pkg"
+            sudo pacman -S --needed --noconfirm --quiet "$pkg" >/dev/null 2>&1 || {
                 warning "Failed to install $pkg. Continuing..."
                 return 1
             }
@@ -69,27 +73,37 @@ install_packages() {
     done
 }
 
+
 install_aur() {
     local pkg
     for pkg in "$@"; do
-        if ! yay -Qi "$pkg" &>/dev/null; then
-            status_step "$pkg"
-            yay -S -qq --needed --noconfirm --noprogressbar "$pkg" 2>/dev/null || {
+        if ! yay -Q "$pkg" &>/dev/null; then
+            sudo -v
+            status_step_info "$pkg"
+            yay -S --needed --noconfirm --quiet "$pkg" >/dev/null 2>&1 || {
                 warning "Failed to install $pkg. Continuing..."
                 return 1
             }
         fi
     done
+}
+
+copy_file() {
+    local file=$1 dest=$2
+    sudo rm -f "$dest/$file"
+    if ! sudo cp "$file" "$dest"; then
+        error "Failed to copy $file"
+        return 1
+    fi
 }
 
 clone_and_build() {
     local repo_url=$1
     local dir_name=$2
-    local build_cmd=${3:-"makepkg -si --needed --noconfirm --noprogressbar"}
+    local build_cmd=${3:-"makepkg -si --needed --noconfirm >/dev/null 2>&1"}
 
-    status_step "$dir_name"
     sudo rm -rf "$INSTALL_DIR/$dir_name"
-    git clone -q "$repo_url" "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
+    git clone -q "$repo_url" >/dev/null 2>&1 "$INSTALL_DIR/$dir_name" || error "Failed to clone $dir_name"
     cd "$INSTALL_DIR/$dir_name" || error "Failed to enter $dir_name directory"
     sudo chown -R "$USER" . || error "Failed to change ownership"
     sudo chmod -R 755 . || error "Failed to change permissions"
@@ -127,53 +141,56 @@ show_menu() {
     done
 }
 
-copy_file() {
-    local file=$1 dest=$2
-    sudo rm -f "$dest/$file"
-    if ! sudo cp "$file" "$dest"; then
-        error "Failed to copy $file"
-        return 1
-    fi
-}
-
 # ======================
 # INSTALLATION SECTIONS
 # ======================
 
 install_dotfiles() {
-    status "Installing Dotfiles..."
+    status "Installing Dotfiles Project"
     INSTALL_DIR="$HOME/Projects"
+
     clone_and_build "https://github.com/mahatmus-tech/dotfiles.git" "dotfiles" \
                     " "
 }
 
 install_apps() {
-    status "Installing Apps..."
+    status "Installing Apps"
 
     # Update packages
-	yay -Syuq --needed --noconfirm --noprogressbar >/dev/null
+	yay -Syu --needed --noconfirm --noprogressbar >/dev/null
 
-    # Coding
+    status_step "Coding"
     install_packages emacs-wayland bash-completion
-    # Basic Edition
+
+    status_step "Basic Edition"
     install_packages micro
-    # RDP
+
+    status_step "RDP"
     install_packages rdesktop
-    # Browser
+
+    status_step "Browser"
     install_aur brave-bin
-    # Call
+
+    status_step "Call"
     install_aur vesktop-bin teams-for-linux
-    # Spotify compatible with wayland
-    install_packages spotify-launcher
-    # AnyDesk
+
+    status_step "Spotify compatible with wayland"
+    # -------------------------------------------
+        cd "$HOME/Projects/dotfiles/configs"
+        install_packages spotify-launcher
+        copy_file spotify-launcher.conf "$HOME/.config"
+    # -------------------------------------------
+
+    status_step "AnyDesk"
     install_aur anydesk-bin
-    # blstrobe
+
+    status_step "blstrobe"
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
                     "./autogen.sh >/dev/null && ./configure >/dev/null && make -s >/dev/null && sudo make -s install >/dev/null"
 }
 
 install_scripts() {
-    status "Installing Scrips..."
+    status "Installing Scrips"
     cd "$HOME/Projects/dotfiles/scripts"
 
     copy_file blstrobe-start.sh "$HOME/Scripts"
@@ -183,23 +200,13 @@ install_scripts() {
 }
 
 install_configs() {
-    status "Installing Configs..."
+    status "Installing Configs"
     cd "$HOME/Projects/dotfiles/configs"
 
-    status_step "Default Directories"
-    mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}    
-    
-    status_step "Monitors Profile"
-    copy_file 2-monitors.conf "$HOME/.config/hypr"
-    copy_file 2-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
-    copy_file 3-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
-    sudo rm -f "$HOME/.config/hypr/monitors.conf"
-    mv "$HOME/.config/hypr/2-monitors.conf" "$HOME/.config/hypr/monitors.conf"
+    status_step "Game Cache Directories"
+    mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}
 
-    status_step "Spotify wayland config"
-    copy_file spotify-launcher.conf "$HOME/.config"
-
-    status_step "Set Mangohud.conf"
+    status_step "Mangohud Preset"
     copy_file MangoHud.conf "$HOME/.config/MangoHud"
 
     status_step "Cooler Master MM720 Freeze Fix"
@@ -208,7 +215,7 @@ install_configs() {
 }
 
 install_mods() {
-    status "Installing Mods..."
+    status "Installing Gaming Mods"
     cd "$HOME/Projects/dotfiles/mods"
 
     local game_path="$HOME/.steam/steam/steamapps/compatdata/2767030/pfx/drive_c/users/steamuser/AppData/Local/Marvel/Saved/Config/Windows/"
@@ -222,67 +229,119 @@ install_mods() {
     fi
 }
 
-install_hyprland_settings() {
-    status "Installing Hyprland Settings..."
+configure_hyprland() {
+    status "Configuring Hyprland"
 	local CONFIG=""
+
+    status_step "Monitor"
+    # ----------------------------
+        cd "$HOME/Projects/dotfiles/configs"
+
+        status_step_info "2-monitors"
+        copy_file 2-monitors.conf "$HOME/.config/hypr"
+        copy_file 2-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
+
+        status_step_info "3-monitors"
+        copy_file 3-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
+
+        status_step_info "2-monitors as Default"
+        sudo rm -f "$HOME/.config/hypr/monitors.conf"
+        mv "$HOME/.config/hypr/2-monitors.conf" "$HOME/.config/hypr/monitors.conf"
+    # ----------------------------
 	
-    CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
-    echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
-    # BLStrobe
-    echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
+    status_step "Startup_Apps"
+    # ------------------------
+        CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
+
+        echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
+        status_step_info "BLStrobe"
+        echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
+    # ------------------------
+
+    status_step "UserKeybinds"
+    # ------------------------
+        CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
+        echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
+
+        status_step_info "Camera Sara"
+        echo "bind = \$mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
+
+        status_step_info "Remote Senior"
+        echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
+    # ------------------------
+
+    status_step "UserKeybinds"
+    # ------------------------
+        CONFIG="$HOME/.config/hypr/UserConfigs/UserSettings.conf"
+
+        status_step_info "Keyboard Layout"
+        sudo sed -i -E "s/kb_variant =/kb_variant = intl/g" "$CONFIG"
+
+        status_step_info "Default Monitor"
+        sudo sed -i -E '/cursor \{/!b;n;c\ \ default_monitor = DP-3' "$CONFIG"
+
+        status_step_info "Enable HDR"
+        echo -e "experimental {\n  xx_color_management_v4 = true\n}" >> "$CONFIG"
+    # ------------------------    
     
-    CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
-    echo -e "\n# Game Tag" >> "$CONFIG"
-    echo "windowrulev2 = tag +games, class:^(marvel-win64-shipping.exe)$" >> "$CONFIG"
-    echo "windowrulev2 = tag +games, class:^(overwatch.exe)$" >> "$CONFIG"
-    echo "windowrulev2 = tag +games, class:^(eldenring.exe)$" >> "$CONFIG"
-    echo "windowrulev2 = tag +games, class:^(nightreign.exe)$" >> "$CONFIG"
+    status_step "WindowRules"
+    # -----------------------
+        CONFIG="$HOME/.config/hypr/UserConfigs/WindowRules.conf"
 
-    echo -e "\n# Workspace" >> "$CONFIG"
-    echo "windowrulev2 = workspace 4, tag:im*" >> "$CONFIG"    
-    echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"    
-    echo "windowrulev2 = workspace 1, class:^(rdesktop)$" >> "$CONFIG"
-    echo "windowrulev2 = workspace 5, class:^(spotify)$" >> "$CONFIG"
+        status_step_info "Game Tag"
+        echo -e "\n# Game Tag" >> "$CONFIG"
+        echo "windowrulev2 = tag +games, class:^(marvel-win64-shipping.exe)$" >> "$CONFIG"
+        echo "windowrulev2 = tag +games, class:^(overwatch.exe)$" >> "$CONFIG"
+        echo "windowrulev2 = tag +games, class:^(eldenring.exe)$" >> "$CONFIG"
+        echo "windowrulev2 = tag +games, class:^(nightreign.exe)$" >> "$CONFIG"
 
-    echo -e "\n# Always ON" >> "$CONFIG"
-    echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
-    echo "windowrulev2 = idleinhibit always, class:^(rdesktop)$" >> "$CONFIG"
+        status_step_info "workspace"
+        echo -e "\n# Workspace" >> "$CONFIG"
+        echo "windowrulev2 = workspace 4, tag:im*" >> "$CONFIG"    
+        echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"    
+        echo "windowrulev2 = workspace 1, class:^(rdesktop)$" >> "$CONFIG"
+        echo "windowrulev2 = workspace 5, class:^(spotify)$" >> "$CONFIG"
 
-    echo -e "\n# Brave save window fix" >> "$CONFIG"
-    echo "windowrulev2 = center, title:.*wants to save.*" >> "$CONFIG"
-    echo "windowrulev2 = center, class:^(vesktop)$" >> "$CONFIG"
+        status_step_info "Always ON"
+        echo -e "\n# Always ON" >> "$CONFIG"
+        echo "windowrulev2 = idleinhibit always, tag:im*" >> "$CONFIG"
+        echo "windowrulev2 = idleinhibit always, class:^(rdesktop)$" >> "$CONFIG"
 
-    echo -e "\n# camera sara" >> "$CONFIG"
-    echo "windowrulev2 = workspace 4, class:ffplay" >> "$CONFIG"
-    echo "windowrulev2 = move 72% 7%, class:ffplay" >> "$CONFIG"
+        status_step_info "Position Fix"
+        echo -e "\n# Brave save window fix" >> "$CONFIG"
+        echo "windowrulev2 = center, title:.*wants to save.*" >> "$CONFIG"
+        echo "windowrulev2 = center, class:^(vesktop)$" >> "$CONFIG"
 
-    echo -e "\n# Workspace Rules" >> "$CONFIG"
-    echo "workspace = 1, monitor:DP-3, persistent:true, default:true" >> "$CONFIG"
-    echo "workspace = 2, monitor:DP-3" >> "$CONFIG"
-    echo "workspace = 3, monitor:DP-3" >> "$CONFIG"
-    echo "workspace = 4, monitor:DP-1, persistent:true, default:true" >> "$CONFIG"
-    echo "workspace = 5, monitor:DP-1" >> "$CONFIG"
-    echo "workspace = 6, monitor:DP-3" >> "$CONFIG"
-    echo "workspace = 7, monitor:DP-3" >> "$CONFIG"
-    echo "workspace = 8, monitor:DP-3,     rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, shadow:false" >> "$CONFIG"
-    echo "workspace = 9, monitor:HDMI-A-1, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, shadow:false, default:true" >> "$CONFIG"
+        status_step_info "Camera sara"
+        echo -e "\n# camera sara" >> "$CONFIG"
+        echo "windowrulev2 = workspace 4, class:ffplay" >> "$CONFIG"
+        echo "windowrulev2 = move 72% 7%, class:ffplay" >> "$CONFIG"
 
-    CONFIG="$HOME/.config/hypr/UserConfigs/UserKeybinds.conf"
-    echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
-    echo "bind = \$mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
-    echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
+        status_step_info "Workspace Rules"
+        echo -e "\n# Workspace Rules" >> "$CONFIG"
+        echo "workspace = 1, monitor:DP-3, persistent:true, default:true" >> "$CONFIG"
+        echo "workspace = 2, monitor:DP-3" >> "$CONFIG"
+        echo "workspace = 3, monitor:DP-3" >> "$CONFIG"
+        echo "workspace = 4, monitor:DP-1, persistent:true, default:true" >> "$CONFIG"
+        echo "workspace = 5, monitor:DP-1" >> "$CONFIG"
+        echo "workspace = 6, monitor:DP-3" >> "$CONFIG"
+        echo "workspace = 7, monitor:DP-3" >> "$CONFIG"
+        echo "workspace = 8, monitor:DP-3,     rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, shadow:false" >> "$CONFIG"
+        echo "workspace = 9, monitor:HDMI-A-1, rounding:false, decorate:false, gapsin:0, gapsout:0, border:false, decorate:false, shadow:false, default:true" >> "$CONFIG"
+    # -----------------------
+}
 
-    CONFIG="$HOME/.config/hypr/UserConfigs/UserSettings.conf"
-    sudo sed -i -E '/cursor \{/!b;n;c\ \ default_monitor = DP-3' "$CONFIG"
-    echo -e "experimental {\n  xx_color_management_v4 = true\n}" >> "$CONFIG"
+configure_kitty() {
+    status "Configuring Kitty"
+	local CONFIG=""
 
-
-    # Change Pokemon-Colorscripts preferences
-    CONFIG="$HOME/.zshrc"
-    sudo sed -i -E "s/pokemon-colorscripts --no-title -s -r/pokemon-colorscripts -r1/g" "$CONFIG"
-
+    status_step "Terminal Theme"
     #change .config/kitty/kitty.conf
     #font_family ttf-jetbrains-mono
+
+    status_step "Pokemon-Colorscripts"
+    CONFIG="$HOME/.zshrc"
+    sudo sed -i -E "s/pokemon-colorscripts --no-title -s -r/pokemon-colorscripts -r1/g" "$CONFIG"    
 
     #Ctrl+B: Waybar style = [WALLUST] Colored
     #Alt+B: waybar layout = [TOP] Minimal - Long
@@ -290,29 +349,37 @@ install_hyprland_settings() {
 }
 
 install_tkg_kernel() {
-    status "Installing Linux-Tkg Kernel..."
+    status "Installing Linux-Tkg Kernel"
     clone_and_build "https://github.com/Frogging-Family/linux-tkg.git" "linux-tkg" \
                     "makepkg -si"
 
-    status_step "Add TKG Kernel in Systemd Boot Loader"
-    cd "$HOME/Projects/dotfiles/configs"
-    copy_file linux-tkg.conf "/boot/loader/entries"
-    copy_file linux-tkg-fallback.conf "/boot/loader/entries"
+    status_step "Bore Kernel Setting"
+    # -----------------------
+        cd "$HOME/Projects/dotfiles/configs"
+        
+        copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
+        sudo sysctl --system
+    # -----------------------
 
-    local root_partuuid=$(blkid -s PARTUUID -o value "$(findmnt -no SOURCE /)")
-    sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg.conf
-    sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg-fallback.conf
-    sudo bootctl set-default linux-tkg.conf
+    status_step "Add TKG Kernel in Systemd Boot Loader"
+    # -------------------------------------------------
+        cd "$HOME/Projects/dotfiles/configs"
+        local root_partuuid=$(blkid -s PARTUUID -o value "$(findmnt -no SOURCE /)")
+
+        copy_file linux-tkg.conf "/boot/loader/entries"
+        copy_file linux-tkg-fallback.conf "/boot/loader/entries"        
+        sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg.conf
+        sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg-fallback.conf
+        sudo bootctl set-default linux-tkg.conf
+    # -------------------------------------------------
 
     status_step "Remove Others Linux Kernel"
-    sudo pacman -R linux-zen-headers linux-zen --noconfirm
-    sudo find /boot -maxdepth 1 -type f ! \( -name '*tkg*' -o -name '*ucode*' \) -exec rm -f {} \;
-    sudo find /boot/loader/entries -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
-    sudo find /etc/mkinitcpio.d -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
-
-    # Download bore kernel.conf
-    copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
-    sudo sysctl --system
+    # --------------------------------------
+        sudo pacman -R linux-zen-headers linux-zen --noconfirm
+        sudo find /boot -maxdepth 1 -type f ! \( -name '*tkg*' -o -name '*ucode*' \) -exec rm -f {} \;
+        sudo find /boot/loader/entries -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
+        sudo find /etc/mkinitcpio.d -maxdepth 1 -type f ! \( -name '*tkg*' \) -exec rm -f {} \;
+    # --------------------------------------
 }
 
 
@@ -338,16 +405,18 @@ main() {
                 install_scripts
                 ;;
             configs)
-
                 install_configs
                 ;;
             mods)
                 install_mods
                 ;;
-            hyprland)
-                install_hyprland_settings
+            kitty)
+                configure_kitty
                 ;;
             hyprland)
+                configure_hyprland
+                ;;                
+            tkg)
                 install_tkg_kernel
                 ;;                
             *)
