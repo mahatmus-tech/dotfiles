@@ -1,3 +1,6 @@
+kernel config
+rw zwap.enabled=0 nowatchdog splash
+
 accountsservice 23.13.9-2.1
 adobe-source-code-pro-fonts 2.042u+1.062i+1.026vf-2
 adobe-source-han-sans-cn-fonts 2.004-2
