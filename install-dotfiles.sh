@@ -95,6 +95,7 @@ copy_file() {
         error "Failed to copy $file"
         return 1
     fi
+    sudo chmod +rwx "$dest/$file"
 }
 
 clone_and_build() {
