@@ -337,16 +337,17 @@ configure_kitty() {
 	local CONFIG=""
 
     status_step "Terminal Theme"
-    #change .config/kitty/kitty.conf
-    #font_family ttf-jetbrains-mono
+    cd "$HOME/Projects/dotfiles/configs"        
+    copy_file kitty.conf "$HOME/.config/kitty"
+    copy_file hyde-theme.conf "$HOME/.config/kitty/kitty-themes"
 
     status_step "Pokemon-Colorscripts"
     CONFIG="$HOME/.zshrc"
     sudo sed -i -E "s/pokemon-colorscripts --no-title -s -r/pokemon-colorscripts -r1/g" "$CONFIG"    
 
-    #Ctrl+B: Waybar style = [WALLUST] Colored
+    #Ctrl+B: Waybar style = [WALLUST] Latte-wallust combined v2
     #Alt+B: waybar layout = [TOP] Minimal - Long
-    #Shift+A: ML4 - fast
+    #Shift+A: 03 - disable animation
 }
 
 install_tkg_kernel() {
@@ -358,8 +359,8 @@ install_tkg_kernel() {
     # -----------------------
         cd "$HOME/Projects/dotfiles/configs"
         
-        copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
-        sudo sysctl --system
+        #copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
+        #sudo sysctl --system
     # -----------------------
 
     status_step "Add TKG Kernel in Systemd Boot Loader"
