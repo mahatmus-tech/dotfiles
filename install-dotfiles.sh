@@ -197,7 +197,8 @@ install_scripts() {
     copy_file blstrobe-start.sh "$HOME/Scripts"
     copy_file camera-sara.sh "$HOME/Scripts"
     copy_file remote-senior.sh "$HOME/Scripts"
-    copy_file gaming-monitor.sh "$HOME/Scripts"
+    copy_file benq-monitor "/usr/bin"
+    copy_file tv-monitor "/usr/bin"
 }
 
 install_configs() {
@@ -207,12 +208,12 @@ install_configs() {
     status_step "Game Cache Directories"
     mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}
 
-    status_step "Mangohud Preset"
-    copy_file MangoHud.conf "$HOME/.config/MangoHud"
+    #status_step "Mangohud Preset"
+    #copy_file MangoHud.conf "$HOME/.config/MangoHud"
 
     status_step "Cooler Master MM720 Freeze Fix"
     copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
-    sudo mkinitcpio -P >/dev/null
+    sudo mkinitcpio -P >/dev/null 2>&1
 }
 
 install_mods() {
@@ -245,9 +246,9 @@ configure_hyprland() {
         status_step_info "3-monitors"
         copy_file 3-monitors.conf "$HOME/.config/hypr/Monitor_Profiles"
 
-        status_step_info "2-monitors as Default"
-        sudo rm -f "$HOME/.config/hypr/monitors.conf"
-        mv "$HOME/.config/hypr/2-monitors.conf" "$HOME/.config/hypr/monitors.conf"
+        #status_step_info "2-monitors as Default"
+        #sudo rm -f "$HOME/.config/hypr/monitors.conf"
+        #mv "$HOME/.config/hypr/2-monitors.conf" "$HOME/.config/hypr/monitors.conf"
     # ----------------------------
 	
     status_step "Startup_Apps"
@@ -355,13 +356,13 @@ install_tkg_kernel() {
     clone_and_build "https://github.com/Frogging-Family/linux-tkg.git" "linux-tkg" \
                     "makepkg -si"
 
-    status_step "Bore Kernel Setting"
-    # -----------------------
-        cd "$HOME/Projects/dotfiles/configs"
-        
-        #copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
-        #sudo sysctl --system
-    # -----------------------
+    #status_step "Bore Kernel Setting"
+    ## -----------------------
+    #    cd "$HOME/Projects/dotfiles/configs"
+    #    
+    #    #copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
+    #    #sudo sysctl --system
+    ## -----------------------
 
     status_step "Add TKG Kernel in Systemd Boot Loader"
     # -------------------------------------------------
