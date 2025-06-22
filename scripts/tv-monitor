@@ -33,6 +33,7 @@
 	export __GL_SHOW_GRAPHICS_OSD=0                 # Disable NVIDIA's Debug Warnings - Reduces log spam 
 	export __GL_PERSISTENT_DISPLAY_PRIORITY=1       # prevents GPU from downclocking during lighter loads
 	export NVIDIA_REFRESH_RATE=120                  # NVIDIA Reflex Support (Reduces latency further)	
+	export LD_PRELOAD=""                            # reduces stutter
 
 	# DLSS Settings
 	export PROTON_ENABLE_NVAPI=1                    # Enable DLSS

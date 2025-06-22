@@ -284,6 +284,14 @@ configure_hyprland() {
 
         status_step_info "Enable HDR"
         echo -e "experimental {\n  xx_color_management_v4 = true\n}" >> "$CONFIG"
+
+        status_step_info "Allow Tearing"
+        sudo sed -i -E '/general \{/!b;n;c\ \ allow_tearing = true' "$CONFIG"
+        sudo sed -i -E "s/general {/general { \n  allow_tearing = true/g" "$CONFIG"
+        vrr = 3
+
+        status_step_info "Layout to Master"
+        sudo sed -i -E "s/layout = dwindle/layout = master/g" "$CONFIG"        
     # ------------------------    
     
     status_step "WindowRules"
