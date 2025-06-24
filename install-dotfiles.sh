@@ -185,6 +185,9 @@ install_apps() {
     status_step "AnyDesk"
     install_aur anydesk-bin
 
+    status_step "Mouse Razer"
+    install_aur razergenie
+
     status_step "blstrobe"
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
                     "./autogen.sh >/dev/null && ./configure >/dev/null && make -s >/dev/null && sudo make -s install >/dev/null"
