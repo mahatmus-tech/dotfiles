@@ -20,11 +20,12 @@
 	export __GL_GSYNC_ALLOWED=0                     # Controls if G-Sync capable monitors should use Variable Refresh Rate (VRR)
 	export __GL_VRR_ALLOWED=0                       # Controls if Adaptive Sync should be used. Recommended to set as “0” to avoid having problems on some games.
 	export __GL_SYNC_TO_VBLANK=0                    # used to control whether swaps are synchronized to a display device's vertical refresh.
-	export __GL_SYNC_DISPLAY_DEVICE=DP-3            # specify to which display device OpenGL should sync	
+	export __GL_SYNC_DISPLAY_DEVICE=DP-3            # specify to which display device OpenGL should sync
 
 	# General Settings
 	export WLR_DRM_NO_ATOMIC=1                      # Disable vsync and allow tearing (reduces input lag)
 	export WLR_NO_HARDWARE_CURSORS=1                # Fix cursor corruption in some games 
+	export LD_PRELOAD=""                            # reduces stutter
 	export DXVK_STATE_CACHE=1                       # reduces stutter by caching shaders
 	export __GL_SHADER_DISK_CACHE=1                 # reduces stutter by caching shaders
 	export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1    # reduces stutter by caching shaders
@@ -33,8 +34,9 @@
 	export __GL_MaxFramesAllowed=1                  # reduces input lag
 	export __GL_SHOW_GRAPHICS_OSD=0                 # Disable NVIDIA's Debug Warnings - Reduces log spam 
 	export __GL_PERSISTENT_DISPLAY_PRIORITY=1       # prevents GPU from downclocking during lighter loads
-	export NVIDIA_REFRESH_RATE=120                  # NVIDIA Reflex Support (Reduces latency further)
-	export LD_PRELOAD=""                            # reduces stutter
+	export NVIDIA_REFRESH_RATE=120                  # NVIDIA Reflex Support (Reduces latency further)		
+	#export __GL_THREADED_OPTIMIZATIONS=1	(lower performance on rivals)
+	#export VKD3D_DISABLE_EXTENSIONS="VK_KHR_present_wait" (fix crash on rivals but, lower performance)
 
 	# DLSS Settings
 	export PROTON_ENABLE_NVAPI=1                    # Enable DLSS
