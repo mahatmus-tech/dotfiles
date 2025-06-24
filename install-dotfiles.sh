@@ -77,10 +77,10 @@ install_packages() {
 install_aur() {
     local pkg
     for pkg in "$@"; do
-        if ! yay -Q "$pkg" &>/dev/null; then
+        if ! paru -Q "$pkg" &>/dev/null; then
             sudo -v
             status_step_info "$pkg"
-            yay -S --needed --noconfirm --quiet "$pkg" >/dev/null 2>&1 || {
+            paru -S --needed --noconfirm --quiet "$pkg" >/dev/null 2>&1 || {
                 warning "Failed to install $pkg. Continuing..."
                 return 1
             }
@@ -158,7 +158,7 @@ install_apps() {
     status "Installing Apps"
 
     # Update packages
-	yay -Syu --needed --noconfirm --noprogressbar >/dev/null
+	paru -Syu --needed --noconfirm --noprogressbar >/dev/null
 
     status_step "Coding"
     install_packages emacs-wayland bash-completion
