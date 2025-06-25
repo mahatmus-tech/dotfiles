@@ -1,32 +1,29 @@
-Launch Options Steam Dictionary 
-
-PROTON-GE
-Enable DLSS: PROTON_ENABLE_NVAPI=1
-Enable Wayland: PROTON_ENABLE_WAYLAND=1
-Extra: VKD3D_DISABLE_EXTENSIONS=VK_KHR_present_wait fix crash when using wayland native(PROTON_ENABLE_WAYLAND=1)
+Launch Options Steam Dictionary
 
 Game: Marvel Rivals
- -> Proton-TKG
-    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ benq-monitor mangohud %command%
-    - XWAYLAND:                         SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ benq-monitor mangohud %command%
+   - FIRST EXECUTION
+      SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ mangohud %command%
+   - WAYLAND
+      PROTON_ENABLE_WAYLAND=1 SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ benq-monitor mangohud %command%
 
 Game: Overwatch 2
- -> Proton-GE
-    - WAYLAND: DXVK_HUD=compiler PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_NVAPI=1 LD_PRELOAD="" __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/ow2/ gamemoderun mangohud %command%
+   - WAYLAND
+      DXVK_HUD=compiler PROTON_ENABLE_WAYLAND=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/ow2/ gamemoderun mangohud %command%
 
 Game: Elden Ring
- -> Proton: Proton-GE
-    - WAYLAND: PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/eldenring/ tv-monitor mangohud %command%
+   - WAYLAND
+      PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/eldenring/ tv-monitor mangohud %command%
 
 Game: Elden Ring Night Reign
- -> Proton: Proton-GE
-    - WAYLAND:  PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/nightreign/ tv-monitor mangohud %command%
-    - XWAYLAND:                 DXVK_HDR=1 ENABLE_HDR_WSI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/nightreign/ tv-monitor mangohud %command%
+   - WAYLAND
+      PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/nightreign/ tv-monitor mangohud %command%
+   - XWAYLAND
+      DXVK_HDR=1 ENABLE_HDR_WSI=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/nightreign/ tv-monitor mangohud %command%
 
 Game: Lords of the Fallen
- -> Proton: Proton-GE
-    - WAYLAND: PROTON_ENABLE_WAYLAND=1 LD_PRELOAD="" __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/lordsofthefallen/ DXVK_HUD=compiler gamemoderun mangohud %command%
+   - WAYLAND
+      PROTON_ENABLE_WAYLAND=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/lordsofthefallen/ DXVK_HUD=compiler gamemoderun mangohud %command%
   
 Game: Lies of P
- -> Proton: Proton-GE
-    - WAYLAND: PROTON_ENABLE_WAYLAND=1 LD_PRELOAD="" __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/liesofp/ DXVK_HUD=compiler gamemoderun mangohud %command%
+   - WAYLAND
+      PROTON_ENABLE_WAYLAND=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/liesofp/ DXVK_HUD=compiler gamemoderun mangohud %command%
