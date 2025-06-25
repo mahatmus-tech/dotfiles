@@ -27,11 +27,11 @@ options_command+=(
     "dotfiles"      "> Install dotfiles.git in ~/Projects" "ON"
     "applications"  "> Install applications"               "ON"
     "scripts"       "> Install scripts in ~/Scripts"       "ON"
-    "configs"       "> Install configs in the system"      "ON"
-    "mods"          "> Install Game Mods"                  "ON"
+    "configs"       "> Install configs in the system"      "ON"    
     "kitty"         "> Install Kitty Settings"             "ON"    
     "hyprland"      "> Install Hyprland Settings"          "ON"
-    "tkg"           "> Install TKG Kernel"                 "ON"
+    "mods"          "> Install Game Mods"                  "OFF"    
+    "tkg"           "> Install TKG Kernel"                 "OFF"
 )
 
 # ======================
@@ -187,6 +187,7 @@ install_apps() {
 
     status_step "Mouse Razer"
     install_aur razergenie
+    sudo gpasswd -a $USER plugdev
 
     status_step "blstrobe"
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
@@ -367,23 +368,29 @@ install_tkg_kernel() {
     clone_and_build "https://github.com/Frogging-Family/linux-tkg.git" "linux-tkg" \
                     "makepkg -si"
 
-    #status_step "Bore Kernel Setting"
-    ## -----------------------
-    #    cd "$HOME/Projects/dotfiles/configs"
-    #    
-    #    #copy_file 69-bore-scheduler.conf "/usr/lib/sysctl.d"
-    #    #sudo sysctl --system
-    ## -----------------------
-
     status_step "Add TKG Kernel in Systemd Boot Loader"
     # -------------------------------------------------
         cd "$HOME/Projects/dotfiles/configs"
-        local root_partuuid=$(blkid -s PARTUUID -o value "$(findmnt -no SOURCE /)")
 
+        local root_partuuid=$(blkid -s PARTUUID -o value "$(findmnt -no SOURCE /)")
+        local vmlinuz_name=$(sudo find /boot -maxdepth 1 -type f -name '*vmlinuz*tkg*' -printf '%f\n')
+        local initramfs_name=$(sudo find /boot -maxdepth 1 -type f -name '*initramfs*tkg*' ! -name '*fallback*' -printf '%f\n')
+        local initramfs_fallback_name=$(sudo find /boot -maxdepth 1 -type f -name '*initramfs*tkg*' -name '*fallback*' -printf '%f\n')
+)
+        
+        # Copy base conf files
         copy_file linux-tkg.conf "/boot/loader/entries"
-        copy_file linux-tkg-fallback.conf "/boot/loader/entries"        
+        copy_file linux-tkg-fallback.conf "/boot/loader/entries"
+        # Set the root id
         sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg.conf
         sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg-fallback.conf
+        # Set vmlinuz
+        sudo sed -i -E "s|VMLINUZ|$vmlinuz_name|" /boot/loader/entries/linux-tkg.conf
+        sudo sed -i -E "s|VMLINUZ|$vmlinuz_name|" /boot/loader/entries/linux-tkg-fallback.conf
+        # Set initramfs
+        sudo sed -i -E "s|INITRAMFS|$initramfs_name|" /boot/loader/entries/linux-tkg.conf
+        sudo sed -i -E "s|INITRAMFS|$initramfs_fallback_name|" /boot/loader/entries/linux-tkg-fallback.conf
+
         sudo bootctl set-default linux-tkg.conf
     # -------------------------------------------------
 
@@ -421,15 +428,15 @@ main() {
             configs)
                 install_configs
                 ;;
-            mods)
-                install_mods
-                ;;
             kitty)
                 configure_kitty
                 ;;
             hyprland)
                 configure_hyprland
-                ;;                
+                ;;
+            mods)
+                install_mods
+                ;;                                
             tkg)
                 install_tkg_kernel
                 ;;                
