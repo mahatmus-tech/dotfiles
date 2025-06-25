@@ -210,14 +210,15 @@ install_configs() {
     cd "$HOME/Projects/dotfiles/configs"
 
     status_step "Game Cache Directories"
-    mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,eldenring,nightreign}
+    mkdir -p "$HOME"/.cache/games/{marvelrivals,ow2,elden.ring,nightreign}
 
     #status_step "Mangohud Preset"
     #copy_file MangoHud.conf "$HOME/.config/MangoHud"
 
     status_step "Mouse Freeze Fix"
-    copy_file mouse-fix.rules /usr/lib/udev/rules.d
-    sudo mkinitcpio -P >/dev/null 2>&1
+    copy_file 48-mouse-fix.rules /usr/lib/udev/rules.d
+    sudo udevadm control --reload
+    sudo udevadm trigger
 }
 
 install_mods() {
