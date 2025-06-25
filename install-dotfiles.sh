@@ -217,8 +217,8 @@ install_configs() {
 
     status_step "Mouse Freeze Fix"
     copy_file 48-mouse-fix.rules /usr/lib/udev/rules.d
-    sudo udevadm control --reload
-    sudo udevadm trigger
+    sudo udevadm control --reload-rules
+    sudo udevadm trigger --subsystem-match=usb --action=add
 }
 
 install_mods() {
