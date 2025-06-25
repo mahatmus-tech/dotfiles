@@ -214,8 +214,8 @@ install_configs() {
     #status_step "Mangohud Preset"
     #copy_file MangoHud.conf "$HOME/.config/MangoHud"
 
-    status_step "Cooler Master MM720 Freeze Fix"
-    copy_file cooler-master-mm720-fix.conf /etc/modprobe.d
+    status_step "Mouse Freeze Fix"
+    copy_file mouse-fix.rules /usr/lib/udev/rules.d
     sudo mkinitcpio -P >/dev/null 2>&1
 }
 

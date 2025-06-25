@@ -1,0 +1,4 @@
+# cooler master mm720
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="2516", ATTRS{idProduct}=="0141", ATTR{power/control}="on"
+# razer naga epic
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="1532", ATTRS{idProduct}=="001f", ATTR{power/control}="on"
