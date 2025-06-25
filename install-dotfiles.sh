@@ -373,23 +373,26 @@ install_tkg_kernel() {
         cd "$HOME/Projects/dotfiles/configs"
 
         local root_partuuid=$(blkid -s PARTUUID -o value "$(findmnt -no SOURCE /)")
+        local kernel_name=$(sudo find /boot -maxdepth 1 -type f -name '*vmlinuz*tkg*' -printf '%f\n' | sed 's/^vmlinuz-//')
         local vmlinuz_name=$(sudo find /boot -maxdepth 1 -type f -name '*vmlinuz*tkg*' -printf '%f\n')
         local initramfs_name=$(sudo find /boot -maxdepth 1 -type f -name '*initramfs*tkg*' ! -name '*fallback*' -printf '%f\n')
         local initramfs_fallback_name=$(sudo find /boot -maxdepth 1 -type f -name '*initramfs*tkg*' -name '*fallback*' -printf '%f\n')
-)
         
         # Copy base conf files
         copy_file linux-tkg.conf "/boot/loader/entries"
         copy_file linux-tkg-fallback.conf "/boot/loader/entries"
-        # Set the root id
-        sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg.conf
-        sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg-fallback.conf
+        # Set the kernel name
+        sudo sed -i -E "s|ARCHTKG|$kernel_name|" /boot/loader/entries/linux-tkg.conf
+        sudo sed -i -E "s|ARCHTKG|$kernel_name|" /boot/loader/entries/linux-tkg-fallback.conf
         # Set vmlinuz
         sudo sed -i -E "s|VMLINUZ|$vmlinuz_name|" /boot/loader/entries/linux-tkg.conf
         sudo sed -i -E "s|VMLINUZ|$vmlinuz_name|" /boot/loader/entries/linux-tkg-fallback.conf
         # Set initramfs
         sudo sed -i -E "s|INITRAMFS|$initramfs_name|" /boot/loader/entries/linux-tkg.conf
-        sudo sed -i -E "s|INITRAMFS|$initramfs_fallback_name|" /boot/loader/entries/linux-tkg-fallback.conf
+        sudo sed -i -E "s|INITRAMFS|$initramfs_fallback_name|" /boot/loader/entries/linux-tkg-fallback.conf          
+        # Set the root id
+        sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg.conf
+        sudo sed -i -E "s|PATITION_ID|$root_partuuid|" /boot/loader/entries/linux-tkg-fallback.conf
 
         sudo bootctl set-default linux-tkg.conf
     # -------------------------------------------------
