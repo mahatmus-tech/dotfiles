@@ -185,9 +185,10 @@ install_apps() {
     status_step "AnyDesk"
     install_aur anydesk-bin
 
-    status_step "Mouse Razer"
-    install_aur razergenie
+    status_step "Razer Support"
     sudo gpasswd -a $USER plugdev
+    install_aur polychromatic
+    
 
     status_step "blstrobe"
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
