@@ -1,1 +1,0 @@
-SUBSYSTEM=="bdi", ACTION=="add", PROGRAM="/usr/bin/nfsrahead %k", ATTR{read_ahead_kb}="%c"
