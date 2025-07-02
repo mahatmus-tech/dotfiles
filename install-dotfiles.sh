@@ -290,6 +290,7 @@ configure_hyprland() {
 
         status_step_info "Enable HDR"
         echo -e "experimental {\n  xx_color_management_v4 = true\n}" >> "$CONFIG"
+        # https://wiki.archlinux.org/title/HDR_monitor_support
 
         #status_step_info "Allow Tearing"
         #sudo sed -i -E '/general \{/!b;n;c\ \ allow_tearing = true' "$CONFIG"
