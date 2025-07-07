@@ -5,3 +5,6 @@
 sudo modprobe i2c-dev
 sudo blstrobe -e -f -p 0 -o /dev/i2c-4 -t 5000 #brilho maximo (30)
 #sudo blstrobe -e -f -p 0 -o /dev/i2c-4 -t 3335 #brilho maximo (20)
+
+# Test the strobe effect
+# https://www.testufo.com/crosstalk
