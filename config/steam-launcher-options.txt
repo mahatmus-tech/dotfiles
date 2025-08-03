@@ -1,10 +1,8 @@
 Launch Options Steam Dictionary
 
 Game: Marvel Rivals
-   - FIRST EXECUTION
-      SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ mangohud %command%
-   - WAYLAND
-      PROTON_ENABLE_WAYLAND=1 SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ benq-monitor mangohud %command%
+   - XWAYLAND
+      SteamDeck=1 __GL_SHADER_DISK_CACHE_PATH=/home/mahatmus/.cache/games/marvelrivals/ benq-monitor mangohud %command%
 
 Game: Overwatch 2
    - WAYLAND

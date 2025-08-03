@@ -175,6 +175,9 @@ install_apps() {
     status_step "Call"
     install_aur vesktop-bin teams-for-linux
 
+    status_step "LossLess Scaling for Linux"
+    install_aur lsfg-vk-git
+
     status_step "Spotify compatible with wayland"
     # -------------------------------------------
         cd "$HOME/Projects/dotfiles/configs"
