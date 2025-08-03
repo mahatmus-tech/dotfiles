@@ -1,0 +1,20 @@
+version = 1
+
+[global]
+dll = "/home/mahatmus/.local/share/Steam/steamapps/common/Lossless Scaling/Lossless.dll"
+
+[[game]]
+exe = "nightreign.exe"
+multiplier = 3
+flow_scale = 1.0
+performance_mode = true
+hdr_mode = false
+experimental_present_mode = "fifo"
+
+[[game]]
+exe = "vkcube"
+multiplier = 4
+flow_scale = 1.0
+performance_mode = true
+hdr_mode = false
+experimental_present_mode = "fifo"

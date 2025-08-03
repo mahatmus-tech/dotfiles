@@ -176,7 +176,11 @@ install_apps() {
     install_aur vesktop-bin teams-for-linux
 
     status_step "LossLess Scaling for Linux"
-    install_aur lsfg-vk-git
+    # -------------------------------------------
+        install_aur lsfg-vk-git
+        cd "$HOME/Projects/dotfiles/configs"
+        copy_file conf.toml "$HOME/.config/lsfg-vk"
+    # -------------------------------------------
 
     status_step "Spotify compatible with wayland"
     # -------------------------------------------
