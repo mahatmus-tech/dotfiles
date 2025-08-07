@@ -175,12 +175,8 @@ install_apps() {
     status_step "Call"
     install_aur vesktop-bin teams-for-linux
 
-    status_step "LossLess Scaling for Linux"
-    # -------------------------------------------
-        install_aur lsfg-vk-git
-        cd "$HOME/Projects/dotfiles/configs"
-        copy_file conf.toml "$HOME/.config/lsfg-vk"
-    # -------------------------------------------
+    status_step "AnyDesk"
+    install_aur anydesk-bin
 
     status_step "Spotify compatible with wayland"
     # -------------------------------------------
@@ -189,13 +185,29 @@ install_apps() {
         copy_file spotify-launcher.conf "$HOME/.config"
     # -------------------------------------------
 
-    status_step "AnyDesk"
-    install_aur anydesk-bin
+    status_step "LossLess Scaling for Linux"
+    # -------------------------------------------
+        install_aur lsfg-vk-git
+        #cd "$HOME/Projects/dotfiles/configs"
+        #copy_file conf.toml "$HOME/.config/lsfg-vk"
+    # -------------------------------------------    
 
     status_step "Razer Support"
-    sudo gpasswd -a $USER plugdev
-    install_aur polychromatic
-    
+    # -------------------------------------------
+        #DPI/Light Control
+        sudo gpasswd -a $USER plugdev
+        install_aur polychromatic
+
+        #Key Mapping
+        install_aur input-remapper-git
+        sudo systemctl enable --now input-remapper
+
+        # Download Presets
+        #cd "$HOME/Projects/dotfiles/configs"
+        #mkdir -p "$HOME"/.config/input-remapper-2/presets/{Razer Razer Orbweaver,Razer Razer Naga Epic}
+        #copy_file Razer Razer Orbweaver "$HOME/.config/input-remapper-2/presets"
+        #copy_file Razer Razer Naga Epic "$HOME/.config/input-remapper-2/presets"
+    # -------------------------------------------    
 
     status_step "blstrobe"
     clone_and_build "https://github.com/fhunleth/blstrobe.git" "blstrobe" \
