@@ -8,7 +8,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_ESC",
+        "output_symbol": "",
         "name": "1",
         "mapping_type": "key_macro"
     },
@@ -34,7 +34,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_2",
+        "output_symbol": "KEY_6",
         "name": "3",
         "mapping_type": "key_macro"
     },
@@ -47,7 +47,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_3",
+        "output_symbol": "KEY_7",
         "name": "4",
         "mapping_type": "key_macro"
     },
@@ -86,7 +86,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_Q",
+        "output_symbol": "KEY_1",
         "name": "7",
         "mapping_type": "key_macro"
     },
@@ -99,7 +99,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_W",
+        "output_symbol": "KEY_2",
         "name": "8",
         "mapping_type": "key_macro"
     },
@@ -112,7 +112,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_E",
+        "output_symbol": "KEY_3",
         "name": "9",
         "mapping_type": "key_macro"
     },
@@ -125,7 +125,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_R",
+        "output_symbol": "KEY_4\n",
         "name": "10",
         "mapping_type": "key_macro"
     },
@@ -138,7 +138,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_LEFTSHIFT",
+        "output_symbol": "KEY_Q",
         "name": "11",
         "mapping_type": "key_macro"
     },
@@ -151,7 +151,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_A",
+        "output_symbol": "KEY_W",
         "name": "12",
         "mapping_type": "key_macro"
     },
@@ -164,7 +164,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_S",
+        "output_symbol": "KEY_E",
         "name": "13",
         "mapping_type": "key_macro"
     },
@@ -177,7 +177,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_D",
+        "output_symbol": "KEY_8",
         "name": "14",
         "mapping_type": "key_macro"
     },
@@ -190,7 +190,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_F",
+        "output_symbol": "KEY_5",
         "name": "15",
         "mapping_type": "key_macro"
     },
@@ -203,7 +203,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_LEFTCTRL",
+        "output_symbol": "KEY_Z",
         "name": "16",
         "mapping_type": "key_macro"
     },
@@ -216,7 +216,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_Z",
+        "output_symbol": "KEY_X",
         "name": "17",
         "mapping_type": "key_macro"
     },
@@ -229,7 +229,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_X",
+        "output_symbol": "KEY_C",
         "name": "18",
         "mapping_type": "key_macro"
     },
@@ -242,7 +242,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_C",
+        "output_symbol": "KEY_V",
         "name": "19",
         "mapping_type": "key_macro"
     },
@@ -255,7 +255,7 @@
             }
         ],
         "target_uinput": "keyboard",
-        "output_symbol": "KEY_G",
+        "output_symbol": "KEY_LEFTSHIFT",
         "name": "20",
         "mapping_type": "key_macro"
     },

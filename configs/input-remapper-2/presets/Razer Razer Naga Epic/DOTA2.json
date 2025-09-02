@@ -1,0 +1,50 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 276,
+                "origin_hash": "e9f4bd45753811b01457d6de268da7f7"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_F4",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 275,
+                "origin_hash": "e9f4bd45753811b01457d6de268da7f7"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_T",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 5,
+                "origin_hash": "e6f2a4fb0f6500c20891d6c31249e1f4"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_F",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 6,
+                "origin_hash": "e6f2a4fb0f6500c20891d6c31249e1f4"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_D",
+        "mapping_type": "key_macro"
+    }
+]
