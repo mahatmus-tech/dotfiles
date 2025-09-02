@@ -2,13 +2,14 @@ version = 1
 
 [global]
 dll = "/home/mahatmus/.local/share/Steam/steamapps/common/Lossless Scaling/Lossless.dll"
+no_fp16 = false
 
 [[game]]
 exe = "nightreign.exe"
-multiplier = 3
+multiplier = 2
 flow_scale = 1.0
-performance_mode = true
-hdr_mode = false
+performance_mode = false
+hdr_mode = true
 experimental_present_mode = "fifo"
 
 [[game]]
