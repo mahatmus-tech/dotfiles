@@ -161,7 +161,7 @@ install_apps() {
 	paru -Syu --needed --noconfirm --noprogressbar >/dev/null
 
     status_step "Coding"
-    install_packages emacs-wayland bash-completion
+    install_packages emacs-wayland bash-completion clojure rlwrap
 
     status_step "Basic Edition"
     install_packages micro
