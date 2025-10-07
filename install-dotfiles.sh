@@ -295,6 +295,9 @@ configure_hyprland() {
 
         status_step_info "Remote Senior"
         echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
+
+        status_step_info "Remote Brasil Paralelo"
+        echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-bp.sh" >> "$CONFIG"
     # ------------------------
 
     status_step "UserKeybinds"
@@ -333,10 +336,12 @@ configure_hyprland() {
 
         status_step_info "workspace"
         echo -e "\n# Workspace" >> "$CONFIG"
-        echo "windowrulev2 = workspace 4, tag:im*" >> "$CONFIG"    
-        echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"    
         echo "windowrulev2 = workspace 1, class:^(rdesktop)$" >> "$CONFIG"
+        echo "windowrulev2 = workspace 3, class:^(xfreerdp)$" >> "$CONFIG"
+        echo "windowrulev2 = workspace 4, tag:im*" >> "$CONFIG"
+        echo "windowrulev2 = workspace 5, tag:gamestore*" >> "$CONFIG"
         echo "windowrulev2 = workspace 5, class:^(spotify)$" >> "$CONFIG"
+        
 
         status_step_info "Always ON"
         echo -e "\n# Always ON" >> "$CONFIG"
