@@ -173,7 +173,7 @@ install_apps() {
     install_aur brave-bin
 
     status_step "Call"
-    install_aur vesktop-bin teams-for-linux
+    install_aur vesktop-bin slack-desktop
 
     status_step "AnyDesk"
     install_aur anydesk-bin
@@ -220,7 +220,7 @@ install_scripts() {
 
     copy_file blstrobe-start.sh "$HOME/Scripts"
     copy_file camera-sara.sh "$HOME/Scripts"
-    copy_file remote-senior.sh "$HOME/Scripts"
+    copy_file remote-bp.sh "$HOME/Scripts"
     copy_file benq-monitor "/usr/bin"
     copy_file tv-monitor "/usr/bin"
 }
@@ -293,8 +293,6 @@ configure_hyprland() {
         status_step_info "Camera Sara"
         echo "bind = \$mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
 
-        status_step_info "Remote Senior"
-        echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-senior.sh" >> "$CONFIG"
 
         status_step_info "Remote Brasil Paralelo"
         echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-bp.sh" >> "$CONFIG"
