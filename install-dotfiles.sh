@@ -281,8 +281,8 @@ configure_hyprland() {
         CONFIG="$HOME/.config/hypr/UserConfigs/Startup_Apps.conf"
 
         echo -e "\n# -----------\n# My Settings\n# -----------\n" >> "$CONFIG"
-        status_step_info "BLStrobe"
-        echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
+        #status_step_info "BLStrobe"
+        #echo "exec-once = ~/Scripts/blstrobe-start.sh" >> "$CONFIG"
     # ------------------------
 
     status_step "UserKeybinds"
@@ -293,12 +293,14 @@ configure_hyprland() {
         status_step_info "Camera Sara"
         echo "bind = \$mainMod SHIFT, C, exec, ~/Scripts/camera-sara.sh" >> "$CONFIG"
 
-
         status_step_info "Remote Brasil Paralelo"
-        echo "bind = \$mainMod SHIFT, R, exec, ~/Scripts/remote-bp.sh" >> "$CONFIG"
+        echo "bind = \$mainMod SHIFT, B, exec, ~/Scripts/remote-bp.sh" >> "$CONFIG"
+
+        status_step_info "Pavucontrol"
+        echo "bind = \$mainMod SHIFT, V, exec, pavucontrol -t 3" >> "$CONFIG"
     # ------------------------
 
-    status_step "UserKeybinds"
+    status_step "UserSettings"
     # ------------------------
         CONFIG="$HOME/.config/hypr/UserConfigs/UserSettings.conf"
 
