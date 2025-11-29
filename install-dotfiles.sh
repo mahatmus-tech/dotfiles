@@ -197,6 +197,7 @@ install_apps() {
         #DPI/Light Control
         sudo gpasswd -a $USER plugdev
         install_aur polychromatic
+        sudo gpasswd -a $USER openrazer
 
         #Key Mapping
         install_aur input-remapper-git
